@@ -1,0 +1,1002 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@200;400;500;600;700&display=swap');
+
+main {
+  font-family: 'Outfit', sans-serif;
+  background-color: #fcf7ee;
+}
+
+/* ========== Banner Section ========== */
+.banner-home {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+  background-image: url('../../images/banner.jpg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+.banner-content {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  padding-left: 48px;
+  padding-right: 32px;
+}
+
+.banner-label {
+  color: #000;
+  font-size: 0.9rem;
+  font-weight: 300;
+  letter-spacing: 0.12em;
+  margin-bottom: 10px;
+  text-transform: uppercase;
+}
+
+.banner-header {
+  color: #000;
+  font-size: 3.2rem;
+  font-weight: 700;
+  margin: 0 0 12px 0;
+  letter-spacing: 1px;
+}
+
+.banner-desc {
+  color: #000;
+  font-size: 2.1rem;
+  font-weight: 300;
+  margin-bottom: 28px;
+}
+
+.banner-buttons {
+  display: flex;
+  align-items: center;
+  gap: 32px;
+  margin-top: 16px;
+}
+
+.btn-explore {
+  background: #ECDEC1;
+  color: #000;
+  border: none;
+  padding: 14px 36px;
+  font-size: 10px;
+  font-weight: 400;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+  box-shadow: none;
+  outline: none;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s, border 0.2s;
+}
+
+.btn-explore:hover {
+  background: #ede3d2;
+  border-color: #d6c6a8;
+}
+
+.btn-play-group {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.btn-play-text {
+  color: #000;
+  font-size: 1rem;
+  font-weight: 400;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+  margin-right: 8px;
+}
+
+.btn-play-line {
+  display: inline-block;
+  width: 38px;
+  height: 1px;
+  background: #000;
+  margin-right: 12px;
+}
+
+.btn-play {
+  position: relative;
+  width: 48px;
+  height: 48px;
+  border: none;
+  background: transparent;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  outline: none;
+  box-shadow: none;
+  padding: 0;
+  overflow: visible;
+}
+
+.btn-play svg {
+  position: relative;
+  z-index: 2;
+}
+
+.btn-play-wave {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 48px;
+  height: 48px;
+  background: rgb(234 191 123 / 74%);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 1;
+  animation: wavePulse 1.8s infinite cubic-bezier(0.4, 0, 0.2, 1);
+  pointer-events: none;
+}
+
+@keyframes wavePulse {
+  0% {
+    opacity: 0.7;
+    transform: translate(-50%, -50%) scale(1);
+  }
+  70% {
+    opacity: 0.15;
+    transform: translate(-50%, -50%) scale(1.9);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(2.2);
+  }
+}
+
+.btn-play-ripple {
+  position: absolute;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: radial-gradient(rgba(234, 191, 123, 0.13) 40%, transparent 70%);
+  z-index: 0;
+  pointer-events: none;
+  animation: rippleFadeIn 1.2s ease;
+}
+
+@keyframes rippleFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.btn-play svg {
+  position: relative;
+  z-index: 1;
+}
+
+.feature-bar-outer {
+  background: #ede0c6;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  font-family: 'Outfit', sans-serif;
+  min-height: 70px;
+  padding: 2rem 0;
+}
+
+.feature-bar-line {
+  flex: 1 1;
+  border-bottom: 2px solid #222;
+  margin: 0 0.5vw;
+  height: 0;
+}
+
+.feature-bar-inner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 2.5rem;
+  background: transparent;
+  padding: 1.2rem 0;
+}
+
+.feature-bar-item {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.feature-bar-icon {
+  font-size: 2.1rem;
+  color: #222;
+  flex-shrink: 0;
+}
+
+.feature-bar-label {
+  font-size: 0.95rem;
+  color: #222;
+  font-weight: 400;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  margin-bottom: 0.1rem;
+}
+
+.feature-bar-bold {
+  font-size: 1.09rem;
+  font-weight: 600;
+  color: #111;
+  letter-spacing: 0.01em;
+}
+
+.feature-bar-separator {
+  width: 2.5rem;
+  height: 2px;
+  background: #222;
+  opacity: 0.2;
+  border-radius: 1px;
+}
+
+@media (max-width: 900px) {
+  .feature-bar-outer{
+    align-items: start;
+    padding: 1rem;
+  }
+  .feature-bar-item{
+    width: 100%;
+  }
+  .feature-bar-inner {
+    gap: 1.2rem;
+  }
+
+  .feature-bar-line{
+    display: none;
+  }
+}
+
+@media (max-width: 600px) {
+  .feature-bar-inner {
+    flex-direction: column;
+    gap: 0.7rem;
+    padding: 1rem 0;
+  }
+}
+
+/* ========== Who We Are Section ========== */
+.who-we-are {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 48px;
+  padding: 48px;
+  max-width: 1200px;
+  margin: 0 auto;
+  flex-wrap: wrap;
+}
+
+.who-content {
+  flex: 1 1 400px;
+  min-width: 300px;
+}
+
+.who-label {
+  color: #bfa67a;
+  font-size: 0.95rem;
+  font-weight: 400;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  margin-bottom: 12px;
+  display: inline-block;
+}
+
+.who-title {
+  font-size: 2.2rem;
+  font-weight: 600;
+  color: #181818;
+  margin-bottom: 18px;
+  line-height: 1.2;
+}
+
+.who-desc {
+  color: #444;
+  font-size: 1.12rem;
+  margin-bottom: 28px;
+  max-width: 540px;
+  font-weight: 200;
+}
+
+.who-features {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.who-features li {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.who-features li strong {
+  font-weight: 500;
+}
+
+.who-icon {
+  font-size: 1.9rem;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.who-feature-desc {
+  color: #666;
+  font-size: 1rem;
+  margin-top: 3px;
+  font-weight: 200;
+}
+
+.who-image {
+  flex: 1 1 320px;
+  min-width: 220px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.who-image img {
+  width: 100%;
+  max-width: 380px;
+  border-radius: 1.2rem;
+  object-fit: cover;
+}
+
+/* ========== Perfume Categories Section ========== */
+.perfume-categories {
+  width: 100%;
+  max-width: 1400px;
+  margin: 0 auto 60px auto;
+  padding: 0 1.5rem;
+}
+
+.categories-grid {
+  display: flex;
+  gap: 2rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.category-col {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  flex: 1 1 320px;
+  min-width: 260px;
+}
+
+.center-col {
+  justify-content: center;
+}
+
+.category-card {
+  position: relative;
+  min-height: 320px;
+  background-size: cover;
+  background-position: center;
+  overflow: hidden;
+  box-shadow: 0 4px 32px rgba(0,0,0,0.10);
+  display: flex;
+  align-items: flex-end;
+  transition: transform 0.25s cubic-bezier(.4,1,.7,1);
+  width: 100%;
+  overflow: hidden;
+}
+
+.category-card:hover {
+  transform: translateY(-8px) scale(1.03);
+}
+
+.category-overlay {
+  padding: 2.2rem 1.5rem 1.5rem 1.5rem;
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  height: 100%; /* or 35% */
+  border-radius: 0 0 1.3rem 1.3rem;
+  z-index: 2;
+  padding: 2.2rem 1.5rem 1.5rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  box-sizing: border-box;
+  transition: height 0.45s cubic-bezier(.4,1,.7,1), background 0.4s;
+}
+
+.category-label {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #bfa67a;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+  font-family: 'Outfit', sans-serif;
+  font-weight: 200;
+}
+.category-title {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #181818;
+  margin-bottom: 0;
+  font-family: 'Outfit', sans-serif;
+  font-weight: 500;
+}
+.category-best {
+  font-size: 1.08rem;
+  color: #555;
+  margin-bottom: 18px;
+  font-family: 'Outfit', sans-serif;
+  font-weight: 200;
+  font-size: 13px;
+}
+.category-btn {
+  color: #000;
+  border-bottom: 2px solid black;
+  text-transform: uppercase;
+  letter-spacing: 0.10rem;
+  font-size: 15px;
+  background: none;
+  cursor: pointer;
+}
+.category-btn:hover {
+  background: #a8833d;
+}
+
+/* Shine Animation */
+.shine {
+  content: "";
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: linear-gradient(120deg, rgba(255,255,255,0) 60%, rgba(255,255,255,0.4) 80%, rgba(255,255,255,0) 100%);
+  transform: skewX(-18deg) translateX(-120%);
+  z-index: 3;
+  pointer-events: none;
+  transition: none;
+}
+.category-card:hover .shine {
+  animation: shine-move 1.1s cubic-bezier(.4,1,.7,1) 1;
+}
+@keyframes shine-move {
+  0% { transform: skewX(-18deg) translateX(-120%); }
+  80% { transform: skewX(-18deg) translateX(120%); }
+  100% { transform: skewX(-18deg) translateX(120%); }
+}
+
+.category-card:hover .category-overlay{
+  height: 55%;
+  background: rgba(255,255,255,0.78);
+}
+
+/* ========== Perfume Section ========== */
+.perfume-section {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 2.5rem;
+  padding: 48px 0 24px 0;
+  width: 100%;
+  margin: 0 auto;
+  flex-wrap: wrap;
+  transform: translateY(100px);
+  opacity: 0;
+  transition: all 0.8s cubic-bezier(0.23, 1, 0.32, 1);
+}
+.perfume-section.visible {
+  transform: translateY(0);
+  opacity: 1;
+}
+.container {
+  background-color: #f0e6cf;
+  padding: 1rem;
+  border-radius: 18px;
+  min-width: 260px;
+  flex: 1 1 320px;
+  max-width: 380px;
+  margin: 0 0.5rem 1.5rem 0.5rem;
+  box-sizing: border-box;
+}
+
+/* ========== Product Card ========== */
+.product-card {
+  background-color: #fbf7f0;
+  border-radius: 14px;
+  padding: 18px 14px;
+  margin-bottom: 18px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 18px;
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 0.5s, transform 0.5s;
+  width: 17rem;
+  max-width: 17rem;
+}
+.product-card.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+.product-card:last-child {
+  margin-bottom: 0;
+}
+
+
+.left {
+  display: flex;
+  flex-direction: column;
+  justify-content: start;
+  align-items: start;
+  gap: 7px;
+  width: 100%;
+}
+.left h3, p {
+  margin: 0;
+}
+.left p {
+  font-size: 12px;
+  opacity: 75%;
+}
+.left .price {
+  font-size: 1rem;
+  opacity: 100%;
+}
+
+.cart-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.add-button {
+  background: #fff;
+  border: 1px solid #bfa67a;
+  border-radius: 20px;
+  padding: 8px 16px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.add-remove-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.add-more-button, .remove-button {
+  background: #fff;
+  border: 1px solid #bfa67a;
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+.product-qty {
+  min-width: 24px;
+  text-align: center;
+  font-weight: 600;
+  font-size: 1.1rem;
+}
+
+/* ========== Products Header ========== */
+.products-header {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+.products-header h2 {
+  margin-top: 10px;
+  font-weight: 600;
+}
+.product-header-label {
+  letter-spacing: 10px;
+}
+
+.center-card{
+  height: 40rem;
+  max-height: 40rem;
+}
+
+/* ========== Responsive Design ========== */
+@media (max-width: 1500px) {
+  .perfume-categories,
+  .perfume-section {
+    max-width: 98vw;
+    padding: 0 0.5rem;
+  }
+  .categories-grid {
+    gap: 1.2rem;
+  }
+  .category-col {
+    gap: 1.2rem;
+    min-width: 180px;
+  }
+  .perfume-section {
+    gap: 1.2rem;
+    padding: 32px 0 12px 0;
+  }
+  .container {
+    min-width: 180px;
+    max-width: 320px;
+    padding: 0.7rem;
+  }
+}
+
+@media (max-width: 1100px) {
+  .categories-grid { gap: 0.7rem; }
+  .category-col { min-width: 140px; }
+  .perfume-section { gap: 1rem; }
+  .container { min-width: 140px; max-width: 260px; padding: 0.5rem; }
+}
+
+@media (max-width: 900px) {
+  .who-we-are {
+    flex-direction: column;
+    gap: 32px;
+    padding: 32px 0;
+  }
+  .who-image img { max-width: 320px; }
+  .categories-grid {
+    flex-direction: column;
+    gap: 1.5rem;
+    align-items: stretch;
+  }
+  .category-col, .center-col {
+    flex-direction: row;
+    gap: 1.5rem;
+    justify-content: center;
+    min-width: 0;
+  }
+  .category-card {
+    flex: 1 1 120px;
+  }
+  .perfume-section {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 1.5rem;
+    padding: 16px 0;
+    width: 95vw;
+  }
+  .container {
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
+    margin: 0 auto 1.5rem auto;
+  }
+  .product-card {
+    padding: 10px 6px;
+    gap: 10px;
+    flex-direction: column;
+    width: 100%;
+    max-width: 100%;
+    background: #fbf7f0;
+  }
+  .product-card img {
+    width: 100%;
+    height: 100%;
+    border-radius: 6px;
+    margin-right: 0;
+    background-color: #f0e6cf8c;
+  }
+  .container h2 {
+    text-align: center;
+  }
+  .card-row {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+  }
+  .btn-play-text, .btn-play-line { display: none; }
+}
+
+@media (max-width: 700px) {
+  .btn-play,
+  .btn-play svg,
+  .btn-play-wave {
+    width: 36px;
+    height: 36px;
+  }
+}
+
+@media (max-width: 600px) {
+  .who-content { padding: 0 12px; }
+  .who-title { font-size: 1.4rem; }
+  .who-desc { font-size: 1rem; }
+  .who-image img { max-width: 100%; }
+  .perfume-categories { padding: 0 0.2rem; }
+  .category-col, .center-col { flex-direction: column; gap: 0.7rem; }
+  .category-title { font-size: 1rem; }
+  .category-best { font-size: 0.8rem; }
+  .category-btn { font-size: 0.9rem; padding: 5px 8px; }
+  .perfume-section {
+    padding: 8px 0;
+    gap: 0.7rem;
+    width: 100vw;
+  }
+  .container {
+    padding: 0.3rem;
+    border-radius: 12px;
+    max-width: 98vw;
+  }
+}
+
+.market-stats {
+  position: relative;
+  width: 100%;
+  background: #f7efde;
+  font-family: 'Outfit', sans-serif;
+  overflow: hidden;
+  padding: 54px 0 44px 0;
+}
+
+.market-bg {
+  position: absolute;
+  inset: 0;
+  background: url('../../images/content-banner.png') center center/cover no-repeat;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.market-content {
+  position: relative;
+  z-index: 1;
+  max-width: 1200px;
+  margin: 0 auto;
+  text-align: center;
+  padding: 0 1rem;
+}
+
+.market-label {
+  text-transform: uppercase;
+  letter-spacing: 0.17em;
+  font-size: 1rem;
+  color: #bfa67a;
+  font-weight: 500;
+  margin-bottom: 8px;
+  display: block;
+}
+
+.market-title {
+  font-size: 2.5rem;
+  font-weight: 600;
+  color: #222;
+  margin-bottom: 32px;
+  font-family: 'Outfit', sans-serif;
+}
+
+.market-stats-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+  flex-wrap: wrap;
+}
+
+.market-stat {
+  flex: 1 1 180px;
+  min-width: 150px;
+  padding: 0 14px;
+  text-align: center;
+}
+
+.market-stat-value {
+  font-size: 2.6rem;
+  font-weight: 700;
+  color: #181818;
+  letter-spacing: 0.01em;
+  font-family: 'Outfit', sans-serif;
+}
+
+.market-stat-unit {
+  font-size: 1.3rem;
+  font-weight: 500;
+  margin-left: 2px;
+  color: #181818;
+}
+
+.market-stat-label {
+  margin-top: 8px;
+  font-size: 1.08rem;
+  color: #bfa67a;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+}
+
+.market-divider {
+  width: 40px;
+  height: 2px;
+  background: #e3d6b8;
+  margin: 0 12px;
+  border-radius: 2px;
+  opacity: 0.7;
+}
+
+.insta-icon{
+  text-align: center;
+  width: 100%;
+}
+@media (max-width: 900px) {
+  .market-stats-row {
+    flex-direction: column;
+    gap: 0;
+  }
+  .market-divider {
+    width: 60%;
+    height: 1.5px;
+    margin: 18px auto;
+  }
+  .market-stat {
+    flex: 1 1 10px;
+    padding: 12px 0;
+  }
+  .market-content {
+    padding: 0 0.3rem;
+  }
+}
+
+@media (max-width: 600px) {
+  .market-title { font-size: 1.3rem; }
+  .market-stat-value { font-size: 1.5rem; }
+  .market-stat-label { font-size: 0.93rem; }
+}
+
+.insta-section {
+  display: flex;
+  align-items: stretch;
+  justify-content: center;
+  background: #f8f3ee;
+  font-family: 'Outfit', sans-serif;
+  height: 15rem;
+  width: 100%;
+  overflow: hidden;
+}
+
+.insta-img {
+  position: relative;
+  flex: 1 1 18vw;
+  min-width: 100px;
+  max-width: 260px;
+  overflow: hidden;
+  display: flex;
+  align-items: stretch;
+  justify-content: center;
+}
+
+.insta-img img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  min-height: 220px;
+}
+
+.insta-img-center {
+  flex: 1 1 22vw;
+  min-width: 120px;
+  max-width: 320px;
+}
+
+.insta-content {
+  background: #f7f1e7;
+  flex: 2 1 420px;
+  min-width: 240px;
+  max-width: 520px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 38px 24px;
+  text-align: center;
+}
+
+.insta-label {
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  font-size: 1rem;
+  color: #bfa67a;
+  font-weight: 500;
+  margin-bottom: 10px;
+  display: block;
+}
+
+.insta-title {
+  font-size: 2.2rem;
+  font-weight: 700;
+  color: #181818;
+  margin-bottom: 14px;
+  font-family: 'Outfit', sans-serif;
+}
+
+.insta-desc {
+  font-size: 1.08rem;
+  color: #444;
+  font-weight: 400;
+  line-height: 1.6;
+}
+
+.insta-hover {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, rgba(230, 186, 155, 0.16) 0%, rgba(191, 166, 122, 0.32) 100%);
+  opacity: 0;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  transition: opacity 0.36s cubic-bezier(.4,1,.7,1);
+  z-index: 2;
+  pointer-events: none;
+  cursor: pointer;
+}
+
+.insta-img:hover .insta-hover {
+  opacity: 1;
+  pointer-events: auto;
+  animation: insta-slide 0.5s cubic-bezier(.4,1,.7,1);
+}
+
+@keyframes insta-slide {
+  0% {
+    opacity: 0;
+    transform: translateX(-40%);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.insta-icon {
+  font-size: 2.5rem;
+  color: #bfa67a;
+  margin-left: 24px;
+  opacity: 0.92;
+}
+
+@media (max-width: 1100px) {
+  .insta-section { flex-direction: column; height: 100%; }
+  .insta-content { padding: 28px 10px; }
+  .insta-title { font-size: 1.3rem; }
+}
+
+@media (max-width: 800px) {
+  .insta-section {
+    flex-direction: column;
+    align-items: stretch;
+    height: 100%;
+  }
+  .insta-img, .insta-img-center {
+    min-width: 100vw;
+    max-width: 100vw;
+    min-height: 120px;
+    max-height: 180px;
+  }
+  .insta-content {
+    min-width: 0;
+    max-width: 100vw;
+    padding: 20px 6vw;
+  }
+}

@@ -1,0 +1,48 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;600&display=swap');
+
+.scrolling-bar-outer {
+  width: 100vw;
+  background: #fcf7eef2;
+  height: 1.3rem;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+  font-family: 'Outfit', sans-serif;
+  font-weight: 400;
+  border-bottom: 1.5px solid #e7e0d5;
+  position: relative;
+  z-index: 20;
+}
+
+.scrolling-bar-inner {
+  width: 100%;
+  overflow: hidden;
+  height: 1.3rem;
+  display: flex;
+  align-items: center;
+}
+
+.scrolling-bar-track {
+  display: flex;
+  align-items: center;
+  white-space: nowrap;
+  animation: scrolling-bar-move 30s linear infinite;
+}
+
+.scrolling-bar-msg {
+  margin-right: 2.5rem;
+  font-size: 0.85rem;
+  color: #222;
+  font-weight: 400;
+  letter-spacing: 0.01em;
+  display: inline-block;
+}
+
+@keyframes scrolling-bar-move {
+  0% {
+    transform: translateX(0%);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}

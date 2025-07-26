@@ -1,0 +1,150 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;700&display=swap');
+
+.main-footer {
+  display: flex;
+  align-items: stretch;
+  justify-content: center;
+  background: #f7efe0;
+  font-family: 'Outfit', sans-serif;
+  padding: 0;
+  width: 100%;
+  border-top: 1px solid #e9e1c8;
+  min-height: 240px;
+  margin-top: 3rem; /* Adds margin above the footer */
+}
+
+.footer-section {
+  flex: 1 1 0;
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.footer-title {
+  font-size: 1.13rem;
+  font-weight: 700;
+  color: #181818;
+  letter-spacing: 0.13em;
+  margin-bottom: 1.1rem;
+  text-transform: uppercase;
+  font-family: 'Outfit', sans-serif;
+}
+
+.footer-social-icons {
+  display: flex;
+  gap: 1rem;
+}
+
+.footer-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: #ece6d4;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #181818;
+  font-size: 1.3rem;
+  transition: background 0.2s, color 0.2s;
+  text-decoration: none;
+}
+.footer-icon:hover {
+  background: #181818;
+  color: #fff;
+}
+
+.footer-logo {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+.footer-logo-text {
+  font-size: 2.1rem;
+  font-family: 'Outfit', sans-serif;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  color: #181818;
+  margin-bottom: 0.5rem;
+  text-transform: lowercase;
+}
+.footer-logo-bold {
+  font-weight: 700;
+  color: #181818;
+  letter-spacing: 0.12em;
+}
+.footer-logo-light {
+  font-weight: 300;
+  color: #181818;
+  margin-left: 0.4rem;
+  letter-spacing: 0.09em;
+}
+
+.footer-copyright {
+  margin-top: 1.2rem;
+  font-size: 1rem;
+  color: #181818;
+  font-family: 'Outfit', sans-serif;
+  font-weight: 400;
+  letter-spacing: 0.03em;
+}
+
+.footer-contact {
+  gap: 0.7rem;
+}
+.footer-contact-row {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin-bottom: 0.7rem;
+}
+.footer-contact-icon {
+  font-size: 1.18rem;
+  color: #181818;
+  width: 26px;
+  height: 26px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.footer-contact-label {
+  font-size: 1.04rem;
+  color: #181818;
+  font-family: 'Outfit', sans-serif;
+  font-weight: 700;
+  margin-right: 0.2rem;
+}
+.footer-contact-value {
+  font-size: 1.04rem;
+  color: #181818;
+  font-family: 'Outfit', sans-serif;
+  font-weight: 300;
+}
+
+.footer-divider {
+  width: 2px;
+  background: #e9e1c8;
+  margin-top: 2rem;
+  margin-bottom: 2rem;
+  border-radius: 2px;
+  opacity: 0.85;
+}
+
+@media (max-width: 900px) {
+  .main-footer {
+    flex-direction: column;
+    align-items: stretch;
+    min-height: 0;
+  }
+  .footer-section {
+    padding: 1.3rem 1rem;
+    align-items: flex-start;
+  }
+  .footer-logo { align-items: flex-start; }
+  .footer-divider {
+    width: 100%;
+    height: 1.5px;
+    margin: 0 0 1.2rem 0;
+  }
+}

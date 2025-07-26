@@ -1,0 +1,55 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;600&display=swap');
+
+.offer-popup-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0,0,0,0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
+
+.offer-popup {
+  background: #fff;
+  border-radius: 1rem;
+  padding: 2rem 2.5rem;
+  max-width: 320px;
+  width: 90%;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+  font-family: 'Outfit', sans-serif;
+  font-weight: 400;
+  color: #222;
+  text-align: center;
+  position: relative;
+}
+
+.offer-popup h2 {
+  font-weight: 600;
+  margin-bottom: 1rem;
+  font-size: 1.5rem;
+}
+
+.offer-popup p {
+  font-size: 1.1rem;
+  margin-bottom: 1.5rem;
+}
+
+.offer-popup-close {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.7rem;
+  background: none;
+  border: none;
+  font-size: 1.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  color: #000;
+  transition: color 0.2s;
+}
+.offer-popup-close:hover {
+  color: #eabf7b;
+}
