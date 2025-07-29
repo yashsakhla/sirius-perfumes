@@ -15,6 +15,7 @@ import { GoogleOAuthProvider } from '@react-oauth/google';
 import ProtectedRoute from './components/guard/protcatedRoute';
 import Account from './components/account/account';
 import { Navigate } from 'react-router-dom';
+import ExclusiveMembers from './components/members/members';
 
 import { UserProvider } from './services/userContext';
 
@@ -33,6 +34,7 @@ function App() {
                     <Route path="/shop" element={<Shop />} />
                     <Route path="/cart" element={<Cart />} />
                     <Route path="/login" element={<Login />} />
+                    <Route path="/members" element={<ExclusiveMembers />} />
                     <Route path="/account" element={<ProtectedRoute><Account /></ProtectedRoute>} />
                     <Route path="/order" element={<ProtectedRoute><OrderHistoryPage /></ProtectedRoute>} />
                     {/* other routes */}

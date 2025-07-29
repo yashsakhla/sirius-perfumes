@@ -25,21 +25,26 @@ function Header() {
   return (
     <>
       <header className={`header ${scrolled ? "header-scrolled" : ""}`}>
-        <span className="logo">Sirius <small>Perfumes</small></span>
+        <span className="logo">
+          <img src={require("../../images/logo.png")} alt="" />
+        </span>
         <nav className="header-nav">
           <div className="nav-row">
             <Link to="/">Home</Link>
             <Link to="/shop">Shop</Link>
-            <a href="/contact">Connect</a>
+            <Link to="/members">Shop</Link>
           </div>
           <div className="nav-row">
             <Link to="/cart" className="icon-link" aria-label="Bags">
               <FaShoppingBag size={20} />
-              {cartCount > 0 && (
-                <span className="cart-badge">{cartCount}</span>
-              )}
+              {cartCount > 0 && <span className="cart-badge">{cartCount}</span>}
             </Link>
-            <Link to="/login" className="icon-link" aria-label="Account" onClick={() => setSidebarOpen(false)}>
+            <Link
+              to="/login"
+              className="icon-link"
+              aria-label="Account"
+              onClick={() => setSidebarOpen(false)}
+            >
               <FaUser size={20} />
             </Link>
           </div>
@@ -54,7 +59,10 @@ function Header() {
       </header>
 
       {/* Sidebar Overlay */}
-      <div className={`sidebar-overlay ${sidebarOpen ? "show" : ""}`} onClick={() => setSidebarOpen(false)} />
+      <div
+        className={`sidebar-overlay ${sidebarOpen ? "show" : ""}`}
+        onClick={() => setSidebarOpen(false)}
+      />
 
       {/* Sidebar */}
       <aside className={`sidebar ${sidebarOpen ? "open" : ""}`}>
@@ -66,17 +74,31 @@ function Header() {
           <FaTimes size={24} />
         </button>
         <nav className="sidebar-nav">
-          <a href="/" onClick={() => setSidebarOpen(false)}>Home</a>
-          <a href="/shop" onClick={() => setSidebarOpen(false)}>Shop</a>
-          <a href="/contact" onClick={() => setSidebarOpen(false)}>Contact</a>
-          <Link to="/cart" className="icon-link" aria-label="Bags">
-            <FaShoppingBag size={20} /> Bag
-            {cartCount > 0 && (
-              <span className="cart-badge">{cartCount}</span>
-            )}
+          <Link to="/" onClick={() => setSidebarOpen(false)}>
+            Home
           </Link>
-          <Link to="/login" className="icon-link" aria-label="Account" onClick={() => setSidebarOpen(false)}>
-            <FaUser size={20} /> Account
+          <Link to="/shop" onClick={() => setSidebarOpen(false)}>
+            Shop
+          </Link>
+          <Link to="/members" onClick={() => setSidebarOpen(false)}>
+            Exculsive Members
+          </Link>
+          <Link
+            to="/cart"
+            className="icon-link"
+            aria-label="Bags"
+            onClick={() => setSidebarOpen(false)}
+          >
+             Bag
+            {cartCount > 0 && <span className="cart-badge">{cartCount}</span>}
+          </Link>
+          <Link
+            to="/login"
+            className="icon-link"
+            aria-label="Account"
+            onClick={() => setSidebarOpen(false)}
+          >
+             Account
           </Link>
         </nav>
       </aside>

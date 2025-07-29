@@ -1000,3 +1000,17 @@ main {
     padding: 20px 6vw;
   }
 }
+
+.loader-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(255, 255, 255, 0.7); /* semi-transparent white */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 10; /* ensure on top */
+  pointer-events: all; /* capture pointer events to block interaction underneath */
+}

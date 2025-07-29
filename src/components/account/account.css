@@ -311,6 +311,7 @@
   padding: 1rem;
   margin-bottom: 1.5rem;
   border-radius: 6px;
+  color: #000;
 }
 
 .order-header {
@@ -383,11 +384,89 @@
   color: #f9a825;
 }
 
+.account-page {
+  font-family: "Outfit", sans-serif;
+  background: #fff;
+  color: #222;
+  min-height: 100vh;
+  padding-bottom: 4rem;
+}
+
+/* Premium user theme */
+.account-page.premium {
+  background: linear-gradient(135deg, #eacf95 0%, #8d7546 100%);
+  color: #fff;
+}
+
+.account-page.premium .banner {
+  background: linear-gradient(135deg, #f1eddb 0%, #ceb16d 100%);
+  color: #3a2f1f;
+  border-bottom: 3px solid #ceb16d;
+}
+
+.account-page.premium .premium-badge {
+  margin: 1rem auto 2rem;
+  max-width: 800px;
+  background: rgba(255, 255, 255, 0.18);
+  padding: 1rem 2rem;
+  border-radius: 12px;
+  font-size: 1.2rem;
+  text-align: center;
+  font-weight: 700;
+  box-shadow: 0 0 10px rgba(134, 94, 2, 0.09);
+  color: #492e06;
+  letter-spacing: 0.5px;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.premium-text {
+  color: #d4af37;
+  font-weight: 900;
+  letter-spacing: 1px;
+  padding: 0 2px;
+}
+
+.star-gradient {
+  font-size: 2rem;
+  filter: drop-shadow(0 3px 8px #e7c55380);
+}
+
+.account-page.premium .section-title,
+.account-page.premium .info-value,
+.account-page.premium .info-label {
+  color: #1c1913;
+}
+
+/* Buttons or links can be styled richer for premium */
+.account-page.premium .edit-btn,
+.account-page.premium .save-btn,
+.account-page.premium .cancel-btn,
+.account-page.premium .account-logout-btn {
+  background-color: rgba(255, 255, 255, 0.22) !important;
+  color: #6f4f13 !important;
+  font-weight: 700;
+  border: 1px solid #edc578 !important;
+  transition: background 0.2s;
+}
+
+.account-page.premium .edit-btn:hover,
+.account-page.premium .save-btn:hover,
+.account-page.premium .cancel-btn:hover,
+.account-page.premium .account-logout-btn:hover {
+  background: #f3deb7 !important;
+  color: #4e350a !important;
+}
+
+/* Your other existing styles (responsive, forms, etc.) ... */
+
+
 /* Responsive */
 
 @media (max-width: 700px) {
   .account-content {
-    padding: 0 0.5rem 2rem 0.5rem;
+    padding: 5rem 0.5rem 2rem 0.5rem;
     max-width: 100%;
   }
   .account-section {

@@ -32,6 +32,7 @@ function ProductCard({ product, qty, addToCart, removeFromCart, className, index
           <p className="price">₹ {product.price}</p>
         </div>
         <div className="cart-actions">
+          {console.log(qty)}
           {qty === 0 ? (
             <button className="add-button" onClick={() => addToCart(product)}>
               ADD <FaArrowUp size={15} className="arrow-icon"/>

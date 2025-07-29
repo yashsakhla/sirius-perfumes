@@ -22,8 +22,10 @@ import cat4 from "../../images/cat-4.jpg";
 import cat5 from "../../images/cat-5.jpg";
 import "./home.css";
 import Loader from "../loader/loader";
+import { Link } from "react-router-dom";
 
-// 🎞️ Animation Variants`
+
+// 🎞️ Animation Variants
 const bannerContentVariants = {
   hidden: { opacity: 0, y: 60 },
   visible: {
@@ -100,12 +102,18 @@ function Home() {
   const rightCategories = [categories[3], categories[4]];
 
   useEffect(() => {
-const fetchData = async () => {
-    const data = await getGroupedProducts();
-    setPerfumes(data);
-    setLoading(false);
-  };
-  fetchData();
+    const fetchData = async () => {
+      try {
+        const data = await getGroupedProducts();
+        setPerfumes(data);
+        setLoading(false)
+      } catch (error) {
+        console.error("Failed to fetch perfumes:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchData();
   }, []);
 
   return (
@@ -113,208 +121,219 @@ const fetchData = async () => {
       <Popup />
       <Scrolltextbar />
 
-      {/* 🌀 Loader while fetching */}
-      {loading ? Loader : (
-        <>
-          {/* 🪄 Banner */}
-          <motion.section
-            className="banner-home"
-            variants={sectionVariants}
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, amount: 0.3 }}
-          >
-            <motion.div className="banner-content" variants={bannerContentVariants}>
-              <motion.span className="banner-label" variants={itemVariants}>
-                PERFUME COLLECTION
-              </motion.span>
-              <motion.h1 className="banner-header" variants={itemVariants}>
-                Discover Your Signature Scent
-              </motion.h1>
-              <motion.p className="banner-desc" variants={itemVariants}>
-                Elegant. Timeless. Unforgettable.
-              </motion.p>
-              <motion.div className="banner-buttons" variants={itemVariants}>
-                <button className="btn-explore">EXPLORE NOW</button>
-                <div className="btn-play-group">
-                  <span className="btn-play-text">PLAY VIDEO</span>
-                  <span className="btn-play-line"></span>
-                  <button className="btn-play">
-                    <span className="btn-play-wave"></span>
-                    <svg width="60" height="60" viewBox="0 0 18 18" fill="none">
-                      <circle cx="9" cy="9" r="9" fill="#F7F3EF" />
-                      <polygon points="7,5 13,9 7,13" fill="#000" />
-                    </svg>
-                  </button>
-                </div>
-              </motion.div>
-            </motion.div>
-          </motion.section>
+      {/* 🪄 Banner */}
+      <motion.section
+        className="banner-home"
+        variants={sectionVariants}
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true, amount: 0.3 }}
+      >
+        <motion.div className="banner-content" variants={bannerContentVariants}>
+          <motion.span className="banner-label" variants={itemVariants}>
+            PERFUME COLLECTION
+          </motion.span>
+          <motion.h1 className="banner-header" variants={itemVariants}>
+            Discover Your Signature Scent
+          </motion.h1>
+          <motion.p className="banner-desc" variants={itemVariants}>
+            Elegant. Timeless. Unforgettable.
+          </motion.p>
+          <motion.div className="banner-buttons" variants={itemVariants}>
+            <button className="btn-explore">EXPLORE NOW</button>
+            <div className="btn-play-group">
+              <span className="btn-play-text">PLAY VIDEO</span>
+              <span className="btn-play-line"></span>
+              <button className="btn-play">
+                <span className="btn-play-wave"></span>
+                <svg width="60" height="60" viewBox="0 0 18 18" fill="none">
+                  <circle cx="9" cy="9" r="9" fill="#F7F3EF" />
+                  <polygon points="7,5 13,9 7,13" fill="#000" />
+                </svg>
+              </button>
+            </div>
+          </motion.div>
+        </motion.div>
+      </motion.section>
 
-          {/* 🚚 Feature Bar */}
-          <motion.div
-            className="feature-bar-outer"
-            variants={sectionVariants}
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, amount: 0.2 }}
-          >
-            <div className="feature-bar-line" />
-            <div className="feature-bar-inner">
-              <div className="feature-bar-item">
-                <FaShippingFast className="feature-bar-icon" />
-                <div>
-                  <div className="feature-bar-label">SHIPPING</div>
-                  <div>
-                    <span className="feature-bar-bold">Free Shipping Worldwide</span>
-                  </div>
-                </div>
-              </div>
-              <div className="feature-bar-separator" />
-              <div className="feature-bar-item">
-                <FaHeadset className="feature-bar-icon" />
-                <div>
-                  <div className="feature-bar-label">HASSLE FREE</div>
-                  <div>
-                    <span className="feature-bar-bold">24×7 Customer Support</span>
-                  </div>
-                </div>
-              </div>
-              <div className="feature-bar-separator" />
-              <div className="feature-bar-item">
-                <FaBoxOpen className="feature-bar-icon" />
-                <div>
-                  <div className="feature-bar-label">SECURE</div>
-                  <div>
-                    <span className="feature-bar-bold">Safe Packaging</span>
-                  </div>
-                </div>
+      {/* 🚚 Feature Bar */}
+      <motion.div
+        className="feature-bar-outer"
+        variants={sectionVariants}
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true, amount: 0.2 }}
+      >
+        <div className="feature-bar-line" />
+        <div className="feature-bar-inner">
+          <div className="feature-bar-item">
+            <FaShippingFast className="feature-bar-icon" />
+            <div>
+              <div className="feature-bar-label">SHIPPING</div>
+              <div>
+                <span className="feature-bar-bold">Free Shipping Worldwide</span>
               </div>
             </div>
-            <div className="feature-bar-line" />
-          </motion.div>
+          </div>
+          <div className="feature-bar-separator" />
+          <div className="feature-bar-item">
+            <FaHeadset className="feature-bar-icon" />
+            <div>
+              <div className="feature-bar-label">HASSLE FREE</div>
+              <div>
+                <span className="feature-bar-bold">24×7 Customer Support</span>
+              </div>
+            </div>
+          </div>
+          <div className="feature-bar-separator" />
+          <div className="feature-bar-item">
+            <FaBoxOpen className="feature-bar-icon" />
+            <div>
+              <div className="feature-bar-label">SECURE</div>
+              <div>
+                <span className="feature-bar-bold">Safe Packaging</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div className="feature-bar-line" />
+      </motion.div>
 
-          {/* 🧴 Perfume Product Categories (From API) */}
-          <motion.section
-            className="perfume-section"
-            variants={sectionVariants}
+      {/* 🧴 Perfume Product Categories (From API) */}
+      <motion.section
+        className="perfume-section"
+        variants={sectionVariants}
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true, amount: 0.2 }}
+        style={{ position: "relative" }} // needed for loader overlay positioning
+      >
+        {loading && (
+          <div className="loader-overlay">
+            <Loader />
+          </div>
+        )}
+
+        {!loading && perfumes.map((group, i) => (
+          <motion.div
+            className="container"
+            key={i}
+            variants={columnVariants}
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true, amount: 0.2 }}
+            custom={i}
           >
-            {perfumes.map((group, i) => (
+            <h2>{group.category}</h2>
+            <div className="card-row">
+              {group.products.map((product, j) => {
+                const cartItem = cart.find((item) => item._id === product._id);
+                const qty = cartItem ? cartItem.qty : 0;
+                return (
+                  <ProductCard
+                    key={product._id}
+                    product={product}
+                    qty={qty}
+                    addToCart={addToCart}
+                    removeFromCart={removeFromCart}
+                    className="visible"
+                    index={j}
+                  />
+                );
+              })}
+            </div>
+          </motion.div>
+        ))}
+      </motion.section>
+
+      {/* 🎨 Perfume Categories Grid */}
+      <motion.section
+        className="perfume-categories"
+        variants={sectionVariants}
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true, amount: 0.2 }}
+      >
+        <div className="categories-grid">
+          {/* Left column */}
+          <div className="category-col">
+            {leftCategories.map((cat, i) => (
               <motion.div
-                className="container"
-                key={i}
-                variants={columnVariants}
+                key={cat.title}
+                className="category-card"
+                style={{ backgroundImage: `url('${cat.img}')` }}
+                variants={categoryCardVariants}
                 initial="hidden"
                 whileInView="visible"
                 viewport={{ once: true, amount: 0.2 }}
                 custom={i}
               >
-                <h2>{group.category}</h2>
-                <div className="card-row">
-                  {group.products.map((product, j) => {
-                    const cartItem = cart.find((item) => item.id === product._id);
-                    const qty = cartItem ? cartItem.qty : 0;
-                    return (
-                      <ProductCard
-                        key={product._id}
-                        product={product}
-                        qty={qty}
-                        addToCart={addToCart}
-                        removeFromCart={removeFromCart}
-                        className="visible"
-                        index={j}
-                      />
-                    );
-                  })}
+                <div className="category-overlay">
+                  <span className="category-label">{cat.label}</span>
+                  <h3 className="category-title">{cat.title}</h3>
+                  <p className="category-best">{cat.best}</p>
+                  <Link to="/shop" className="category-btn">
+  View Categories
+</Link>
                 </div>
+                <span className="shine" />
               </motion.div>
             ))}
-          </motion.section>
+          </div>
 
-          {/* 🎨 Perfume Categories Grid */}
-          <motion.section
-            className="perfume-categories"
-            variants={sectionVariants}
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, amount: 0.2 }}
-          >
-            <div className="categories-grid">
-              {/* Left column */}
-              <div className="category-col">
-                {leftCategories.map((cat, i) => (
-                  <motion.div
-                    key={cat.title}
-                    className="category-card"
-                    style={{ backgroundImage: `url('${cat.img}')` }}
-                    variants={categoryCardVariants}
-                    initial="hidden"
-                    whileInView="visible"
-                    viewport={{ once: true, amount: 0.2 }}
-                    custom={i}
-                  >
-                    <div className="category-overlay">
-                      <span className="category-label">{cat.label}</span>
-                      <h3 className="category-title">{cat.title}</h3>
-                      <p className="category-best">{cat.best}</p>
-                      <a className="category-btn">View Categories</a>
-                    </div>
-                    <span className="shine" />
-                  </motion.div>
-                ))}
+          {/* Center column */}
+          <div className="category-col center-col">
+            <motion.div
+              className="category-card center-card"
+              style={{ backgroundImage: `url('${centerCategory.img}')` }}
+              variants={categoryCardVariants}
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true, amount: 0.2 }}
+              custom={2}
+            >
+              <div className="category-overlay">
+                <span className="category-label">{centerCategory.label}</span>
+                <h3 className="category-title">{centerCategory.title}</h3>
+                <p className="category-best">{centerCategory.best}</p>
+                <Link to="/shop" className="category-btn">
+  View Categories
+</Link>
               </div>
+              <span className="shine" />
+            </motion.div>
+          </div>
 
-              {/* Center column */}
-              <div className="category-col center-col">
-                <motion.div
-                  className="category-card center-card"
-                  style={{ backgroundImage: `url('${centerCategory.img}')` }}
-                  variants={categoryCardVariants}
-                  initial="hidden"
-                  whileInView="visible"
-                  viewport={{ once: true, amount: 0.2 }}
-                  custom={2}
-                >
-                  <div className="category-overlay">
-                    <span className="category-label">{centerCategory.label}</span>
-                    <h3 className="category-title">{centerCategory.title}</h3>
-                    <p className="category-best">{centerCategory.best}</p>
-                    <a className="category-btn">View Categories</a>
-                  </div>
-                  <span className="shine" />
-                </motion.div>
-              </div>
+          {/* Right column */}
+          <div className="category-col">
+            {rightCategories.map((cat, i) => (
+              <motion.div
+                key={cat.title}
+                className="category-card"
+                style={{ backgroundImage: `url('${cat.img}')` }}
+                variants={categoryCardVariants}
+                initial="hidden"
+                whileInView="visible"
+                viewport={{ once: true, amount: 0.2 }}
+                custom={3 + i}
+              >
+                <div className="category-overlay">
+                  <span className="category-label">{cat.label}</span>
+                  <h3 className="category-title">{cat.title}</h3>
+                  <p className="category-best">{cat.best}</p>
+                  <Link to="/shop" className="category-btn">
+  View Categories
+</Link>
+                </div>
+                <span className="shine" />
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </motion.section>
 
-              {/* Right column */}
-              <div className="category-col">
-                {rightCategories.map((cat, i) => (
-                  <motion.div
-                    key={cat.title}
-                    className="category-card"
-                    style={{ backgroundImage: `url('${cat.img}')` }}
-                    variants={categoryCardVariants}
-                    initial="hidden"
-                    whileInView="visible"
-                    viewport={{ once: true, amount: 0.2 }}
-                    custom={3 + i}
-                  >
-                    <div className="category-overlay">
-                      <span className="category-label">{cat.label}</span>
-                      <h3 className="category-title">{cat.title}</h3>
-                      <p className="category-best">{cat.best}</p>
-                      <a className="category-btn">View Categories</a>
-                    </div>
-                    <span className="shine" />
-                  </motion.div>
-                ))}
-              </div>
-            </div>
-          </motion.section>
-
-                <motion.section
+      {/* Market Stats */}
+      <motion.section
         className="market-stats"
         variants={sectionVariants}
         initial="hidden"
@@ -327,22 +346,30 @@ const fetchData = async () => {
           <h2 className="market-title">Healthiest Cosmetics</h2>
           <div className="market-stats-row">
             <div className="market-stat">
-              <span className="market-stat-value">4300<span className="market-stat-unit">K</span></span>
+              <span className="market-stat-value">
+                4300<span className="market-stat-unit">K</span>
+              </span>
               <div className="market-stat-label">Products Sold</div>
             </div>
             <div className="market-divider"></div>
             <div className="market-stat">
-              <span className="market-stat-value">99.99<span className="market-stat-unit">%</span></span>
+              <span className="market-stat-value">
+                99.99<span className="market-stat-unit">%</span>
+              </span>
               <div className="market-stat-label">Satisfaction Guranteed</div>
             </div>
             <div className="market-divider"></div>
             <div className="market-stat">
-              <span className="market-stat-value">42<span className="market-stat-unit">K</span></span>
+              <span className="market-stat-value">
+                42<span className="market-stat-unit">K</span>
+              </span>
               <div className="market-stat-label">Customers Satisfied</div>
             </div>
             <div className="market-divider"></div>
             <div className="market-stat">
-              <span className="market-stat-value">0.01<span className="market-stat-unit">%</span></span>
+              <span className="market-stat-value">
+                0.01<span className="market-stat-unit">%</span>
+              </span>
               <div className="market-stat-label">Defective Returns</div>
             </div>
           </div>
@@ -359,13 +386,13 @@ const fetchData = async () => {
       >
         <div className="insta-img insta-img-left">
           <div className="insta-hover">
-            <FaInstagram className="insta-icon" size={20}/>
+            <FaInstagram className="insta-icon" size={20} />
           </div>
           <img src={require("../../images/insta-1.jpg")} alt="" />
         </div>
         <div className="insta-img insta-img-left">
           <div className="insta-hover">
-            <FaInstagram className="insta-icon" size={20}/>
+            <FaInstagram className="insta-icon" size={20} />
           </div>
           <img src={require("../../images/insta-2.jpg")} alt="" />
         </div>
@@ -379,19 +406,17 @@ const fetchData = async () => {
         </div>
         <div className="insta-img insta-img-right">
           <div className="insta-hover">
-            <FaInstagram className="insta-icon" size={20}/>
+            <FaInstagram className="insta-icon" size={20} />
           </div>
           <img src={require("../../images/insta-3.jpg")} alt="" />
         </div>
         <div className="insta-img insta-img-right">
           <div className="insta-hover">
-            <FaInstagram className="insta-icon" size={20}/>
+            <FaInstagram className="insta-icon" size={20} />
           </div>
           <img src={require("../../images/insta-4.jpg")} alt="" />
         </div>
       </motion.section>
-        </>
-      )}
     </main>
   );
 }

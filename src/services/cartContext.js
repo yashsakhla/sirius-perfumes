@@ -11,32 +11,31 @@ export function CartProvider({ children }) {
   const [cart, setCart] = useState([]);
   const { showToast } = useToaster();
 
-  // Add one unit of a product
-  const addToCart = (product) => {
-    setCart((prev) => {
-      const existing = prev.find((item) => item._id === product._id);
-      if (existing) {
-        showToast("Product added to bag");
-        return prev.map((item) =>
-          item.id === product.id ? { ...item, qty: item.qty + 1 } : item
-        );
-      } else {
-        showToast("Product added to bag");
-        return [...prev, { ...product, qty: 1 }];
-      }
-    });
-  };
+const addToCart = (product) => {
+  setCart((prev) => {
+    const existing = prev.find((item) => item._id === product._id);
+    if (existing) {
+      showToast("Product added to bag");
+      return prev.map((item) =>
+        item._id === product._id ? { ...item, qty: item.qty + 1 } : item
+      );
+    } else {
+      showToast("Product added to bag");
+      return [...prev, { ...product, qty: 1 }];
+    }
+  });
+};
 
-  // Remove one unit of a product
-  const removeFromCart = (product) => {
-    setCart((prev) =>
-      prev
-        .map((item) =>
-          item.id === product.id ? { ...item, qty: item.qty - 1 } : item
-        )
-        .filter((item) => item.qty > 0)
-    );
-  };
+const removeFromCart = (product) => {
+  setCart((prev) =>
+    prev
+      .map((item) =>
+        item._id === product._id ? { ...item, qty: item.qty - 1 } : item
+      )
+      .filter((item) => item.qty > 0)
+  );
+};
+
 
   const clearCart = () => {
     setCart([]);

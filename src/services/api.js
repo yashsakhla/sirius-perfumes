@@ -43,7 +43,8 @@ export const verifyCoupon = async (code) => {
 };
 
 export const getCartPrice = async (products) => {
-  const res = await axiosInstance.post(`${url}/api/perfumes/cart-price`, { products });
+  console.log(products)
+  const res = await axiosInstance.post(`${url}/api/perfumes/cart-price`, products );
   return res.data; // e.g., { subtotal: 500, total: 490, discount: 10 }
 };
 

@@ -157,13 +157,19 @@
 }
 
 .sidebar-nav a 
-
 .sidebar-nav a:hover {
   color: #eabf7b;
 }
 
+.logo img{
+  width: 7rem;
+}
+
 /* Responsive */
 @media (max-width: 900px) {
+  .logo img{
+  width: 3rem;
+ }
   .header {
     padding: 1rem;
   }
@@ -172,6 +178,7 @@
   }
   .icon-link{
     display: none;
+    margin-left: 0;
   }
 }
 
@@ -183,3 +190,5 @@
     display: block;
   }
 }
+
+

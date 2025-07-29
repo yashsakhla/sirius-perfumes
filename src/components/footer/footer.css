@@ -10,7 +10,6 @@
   width: 100%;
   border-top: 1px solid #e9e1c8;
   min-height: 240px;
-  margin-top: 3rem; /* Adds margin above the footer */
 }
 
 .footer-section {
@@ -141,10 +140,120 @@
     padding: 1.3rem 1rem;
     align-items: flex-start;
   }
-  .footer-logo { align-items: flex-start; }
+  .footer-logo { align-items: center; }
   .footer-divider {
     width: 100%;
     height: 1.5px;
     margin: 0 0 1.2rem 0;
   }
+}
+
+.rows{
+      display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 1rem;
+}
+
+.chatus-widget {
+  display: flex;
+  align-items: center;
+  font-family: 'Outfit', Arial, sans-serif;
+  background: none;
+  box-shadow: none;
+  padding: 0;
+  width: fit-content;
+  max-width: 100%;
+}
+
+.chatus-icon {
+  color: #111;
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 10px;
+  flex-shrink: 0;
+}
+
+.chatus-content {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.chatus-title {
+  font-weight: 600;
+  font-size: 0.96rem;
+  color: #212121;
+  line-height: 1.2;
+}
+
+.chatus-phone {
+  color: #555;
+  font-size: 0.90rem;
+  letter-spacing: 0.5px;
+  margin-top: 0.5px;
+}
+
+.footer-contact-rows {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-width: 340px;
+}
+
+.footer-contact-row {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  color: inherit;
+  text-decoration: none;
+  font-family: 'Outfit', Arial, sans-serif;
+  padding: 0;
+  transition: color 0.15s;
+}
+
+.footer-contact-row-icon {
+  color: #191919;
+  border-radius: 50%;
+  width: 31px;
+  height: 31px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.footer-contact-row-content {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.footer-contact-row-title {
+  font-weight: 600;
+  font-size: 0.98rem;
+  color: #202020;
+  line-height: 1;
+}
+
+.footer-contact-row-value {
+  color: #444;
+  font-size: 0.89rem;
+  letter-spacing: 0.4px;
+  margin-top: 1.3px;
+  line-height: 1.12;
+  word-break: break-all;
+}
+
+/* Optional: simple hover effect */
+.footer-contact-row:hover .footer-contact-row-title {
+  color: #189d5a;
+}
+
+.footer-logo-text img{
+  width: 7rem;
 }

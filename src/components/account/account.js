@@ -51,76 +51,63 @@ export default function Account() {
   });
   const [orders, setOrders] = useState([]);
 
-  useEffect(() => {
-    const storedUser = localStorage.getItem("googleUser");
-    const storedAccount = localStorage.getItem("accountDetails");
-    if (user) {
-        console.log(user)
-      fetchUserOrders(user.id)
-        .then((orders) => {
-          setOrders(orders);
-          setLoading(false);
-        })
-        .catch((err) => {
-          console.error("Failed to fetch user orders:", err);
-          setLoading(false);
-        });
-    }
+useEffect(() => {
+  const storedUser = localStorage.getItem("googleUser");
+  const storedAccount = localStorage.getItem("accountDetails");
 
-    if (!user && !storedUser) {
-      navigate("/login");
-      return;
-    }
+  if (!user && !storedUser) {
+    navigate("/login");
+    return;
+  }
 
-    if (!user && storedUser) {
-      setUser(JSON.parse(storedUser));
-      return;
-    }
+  if (!user && storedUser) {
+    setUser(JSON.parse(storedUser));
+  }
 
-    // If we have account details cached
-    if (!account && storedAccount) {
-      const parsedAccount = JSON.parse(storedAccount);
-      setAccount(parsedAccount);
-      setNameInput(parsedAccount.name || "");
-      setAddressInput(
-        parsedAccount.address || {
+  // Show cached account data immediately for quicker UX
+  if (!account && storedAccount) {
+    const parsedAccount = JSON.parse(storedAccount);
+    setAccount(parsedAccount);
+    setNameInput(parsedAccount.name || "");
+    setAddressInput(parsedAccount.address || {
+      line1: "",
+      line2: "",
+      city: "",
+      state: "",
+      pincode: "",
+    });
+  }
+
+  if (user) {
+    setLoading(true);
+
+    // Fetch account details and orders simultaneously
+    Promise.all([fetchAccountDetails(), fetchUserOrders(user.id)])
+      .then(([accountData, ordersData]) => {
+        setAccount(accountData);
+        setNameInput(accountData.name || "");
+        setAddressInput(accountData.address || {
           line1: "",
           line2: "",
           city: "",
           state: "",
           pincode: "",
-        }
-      );
-      return;
-    }
-
-    // Fetch from API only if account is not in memory or cache
-    if (!account && user) {
-      setLoading(true);
-      fetchAccountDetails()
-        .then((data) => {
-          setAccount(data);
-          setNameInput(data.name || "");
-          setAddressInput(
-            data.address || {
-              line1: "",
-              line2: "",
-              city: "",
-              state: "",
-              pincode: "",
-            }
-          );
-
-          // Cache it ✅
-          localStorage.setItem("accountDetails", JSON.stringify(data));
-          setLoading(false);
-        })
-        .catch((error) => {
-          console.error("Failed to fetch account:", error);
-          setLoading(false);
         });
-    }
-  }, [user]);
+        setOrders(ordersData);
+
+        // Cache latest account data
+        localStorage.setItem("accountDetails", JSON.stringify(accountData));
+        setLoading(false);
+      })
+      .catch((error) => {
+        console.error("Failed to fetch account or orders:", error);
+        setLoading(false);
+      });
+  }
+}, [user]);
+
+
+
 
   const handleNameSave = async () => {
     setLoading(true);
@@ -174,6 +161,8 @@ export default function Account() {
     setAccount(null);
     localStorage.removeItem("googleUser");
     localStorage.removeItem("authToken");
+    localStorage.removeItem("accountDetails");
+    localStorage.removeItem("offerPopupShown");
     navigate("/login");
   };
 
@@ -183,10 +172,14 @@ export default function Account() {
     return null;
   }
 
+  // Premium logic
+  const isPremiumUser = account?.premiumUser === true || user?.premiumUser === true;
+
   return (
-    <div className="account-page">
+    <div className={`account-page${isPremiumUser ? " premium" : ""}`}>
       {loading && <Loader />}
-      {/* Banner section */}
+
+      {/* Banner */}
       <section className="banner">
         <motion.div
           className="banner-content"
@@ -205,6 +198,16 @@ export default function Account() {
           </motion.p>
         </motion.div>
       </section>
+
+      {/* PREMIUM BADGE */}
+      {isPremiumUser && (
+        <div className="premium-badge">
+          <span role="img" aria-label="star" className="star-gradient">🌟</span>
+          <span>
+            You are a <span className="premium-text">Premium Member</span>! Enjoy exclusive access, golden offers, and luxury perks.
+          </span>
+        </div>
+      )}
 
       {/* Main account content */}
       <div className="account-content">
@@ -399,7 +402,7 @@ export default function Account() {
                 ];
                 const currentStep = statusSteps.indexOf(order.status);
                 const deliveryDate = new Date(order.date);
-                deliveryDate.setDate(deliveryDate.getDate() + 5); // Assuming delivery in 5 days
+                deliveryDate.setDate(deliveryDate.getDate() + 5);
 
                 return (
                   <div className="order-card" key={order._id || idx}>
@@ -407,12 +410,9 @@ export default function Account() {
                       <span>Order #{order._id}</span>
                       <span>{new Date(order.date).toLocaleDateString()}</span>
                     </div>
-
                     <div className="order-products">
-                      {order.products?.join(", ")}{" "}
-                      {/* Adjust based on your API shape */}
+                      {order.products?.join(", ")}
                     </div>
-
                     <div className="order-status-progress">
                       {statusSteps.map((step, i) => (
                         <div
@@ -436,7 +436,6 @@ export default function Account() {
                         />
                       </div>
                     </div>
-
                     <div className="order-message">
                       {order.status === "Delivered" ? (
                         <span className="delivered-msg">

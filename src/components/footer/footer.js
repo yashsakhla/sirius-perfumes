@@ -5,9 +5,9 @@ import {
   FaWhatsapp,
   FaPhone,
   FaEnvelope,
-  FaMapMarkerAlt,
-  FaLocationArrow,
+  FaLocationArrow
 } from "react-icons/fa6";
+import { BsChatDotsFill } from "react-icons/bs";
 import "./footer.css";
 
 const Footer = () => (
@@ -32,7 +32,7 @@ const Footer = () => (
     <div className="footer-divider"></div>
     <div className="footer-section footer-logo">
       <span className="footer-logo-text">
-        <span className="footer-logo-bold">sirius</span>
+        <img src={require("../../images/logo.png")} alt="" />
       </span>
       <div className="footer-copyright">
         &copy; {new Date().getFullYear()} Sirius. All rights reserved.
@@ -41,46 +41,60 @@ const Footer = () => (
     <div className="footer-divider"></div>
 <div className="footer-section footer-contact">
   <div className="footer-title">Contact Details</div>
-  <div className="footer-contact-row">
-    <a
-      href="https://wa.me/919876543210"
-      target="_blank"
-      rel="noopener noreferrer"
-      className="footer-contact-icon"
-      aria-label="WhatsApp"
-    >
-      <FaWhatsapp />
-    </a>
-  </div>
-  <div className="footer-contact-row">
-    <a
-      href="tel:+911234567890"
-      className="footer-contact-icon"
-      aria-label="Phone"
-    >
-      <FaPhone />
-    </a>
-  </div>
-  <div className="footer-contact-row">
-    <a
-      href="mailto:info@sirius.com"
-      className="footer-contact-icon"
-      aria-label="Email"
-    >
-      <FaEnvelope />
-    </a>
-  </div>
-  <div className="footer-contact-row">
-    <a
-      href="https://www.google.com/maps/search/?api=1&query=123+Main+Street+Mumbai+India"
-      target="_blank"
-      rel="noopener noreferrer"
-      className="footer-contact-icon"
-      aria-label="Location"
-    >
-      <FaLocationArrow />
-    </a>
-  </div>
+<div className="footer-contact-rows">
+  <a
+    href="https://wa.me/+919370917752"
+    target="_blank"
+    rel="noopener noreferrer"
+    className="footer-contact-row"
+    aria-label="Chat with us on WhatsApp"
+    title="Chat with us on WhatsApp"
+  >
+    <span className="footer-contact-row-icon"><FaWhatsapp size={22} /></span>
+    <span className="footer-contact-row-content">
+      <span className="footer-contact-row-title">Chat Us Anytime</span>
+      <span className="footer-contact-row-value">+91 93709 17752</span>
+    </span>
+  </a>
+  <a
+    href="tel:+919370917752"
+    className="footer-contact-row"
+    aria-label="Call Us"
+    title="Call us"
+  >
+    <span className="footer-contact-row-icon"><FaPhone size={22} /></span>
+    <span className="footer-contact-row-content">
+      <span className="footer-contact-row-title">Call Us</span>
+      <span className="footer-contact-row-value">+91 93709 17752</span>
+    </span>
+  </a>
+  <a
+    href="mailto:siriusperfumes24@gmail.com"
+    className="footer-contact-row"
+    aria-label="Email"
+    title="Email us"
+  >
+    <span className="footer-contact-row-icon"><FaEnvelope size={22} /></span>
+    <span className="footer-contact-row-content">
+      <span className="footer-contact-row-title">Mail Us</span>
+      <span className="footer-contact-row-value">siriusperfumes24@gmail.com</span>
+    </span>
+  </a>
+  <a
+    href="https://www.google.com/maps/search/?api=1&query=123+Main+Street+Mumbai+India"
+    target="_blank"
+    rel="noopener noreferrer"
+    className="footer-contact-row"
+    aria-label="Find us on map"
+    title="Find us on map"
+  >
+    <span className="footer-contact-row-icon"><FaLocationArrow size={22} /></span>
+    <span className="footer-contact-row-content">
+      <span className="footer-contact-row-title">Find Us</span>
+      <span className="footer-contact-row-value">301,3rd floor royal tulip apartment,Nagpur,Maharashtra</span>
+    </span>
+  </a>
+</div>
 </div>
   </footer>
 );
