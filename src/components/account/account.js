@@ -10,7 +10,9 @@ import { useCart } from "../../services/cartContext";
 import { FaEdit, FaUser, FaShoppingCart, FaTag } from "react-icons/fa";
 import { motion } from "framer-motion";
 import Loader from "../loader/loader";
+import ErrorPopup from "../error-popup/Error-popup";
 import "./account.css";
+
 
 const bannerContentVariants = {
   hidden: { opacity: 0, y: 60 },
@@ -50,6 +52,7 @@ export default function Account() {
     pincode: "",
   });
   const [orders, setOrders] = useState([]);
+  const [showErrorPopup, setShowErrorPopup] = React.useState(false);
 
 useEffect(() => {
   const storedUser = localStorage.getItem("googleUser");
@@ -101,6 +104,7 @@ useEffect(() => {
       })
       .catch((error) => {
         console.error("Failed to fetch account or orders:", error);
+        setShowErrorPopup(true);
         setLoading(false);
       });
   }
@@ -461,6 +465,13 @@ useEffect(() => {
           Logout
         </button>
       </div>
+
+      {showErrorPopup && (
+        <ErrorPopup
+          message="We are currently facing difficulty at our end, sorry for the inconvenience."
+          onClose={() => setShowErrorPopup(false)}
+        />
+      )}
     </div>
   );
 }

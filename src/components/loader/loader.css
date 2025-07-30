@@ -1,27 +1,136 @@
-.loader-overlay {
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;600&display=swap');
+
+.perfume-loader-overlay {
   position: fixed;
   top: 0;
   left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(255, 255, 255, 0.7);
+  width: 100vw;
+  height: 100vh;
+  background: rgba(2, 2, 2, 0.412);
   display: flex;
-  align-items: center;
+  flex-direction: column;
   justify-content: center;
+  align-items: center;
+  font-family: 'Outfit', sans-serif;
   z-index: 9999;
 }
 
-.spinner {
-  width: 50px;
-  height: 50px;
-  border: 4px solid #aaa;
-  border-top-color: #000;
-  border-radius: 50%;
-  animation: spin 0.9s linear infinite;
+.loader-text {
+  margin-top: 20px;
+  color: #8b5e3c;
+  font-size: 1.3rem;
+  font-weight: 600;
+  letter-spacing: 1px;
 }
 
-@keyframes spin {
+/* Perfume Bottle Container */
+.perfume-bottle {
+  position: relative;
+  width: 120px;
+  padding-bottom: 1rem;
+}
+
+/* Bottle Body */
+.bottle-body {
+  width: 80px;
+  height: 140px;
+  background: linear-gradient(145deg, #fdf0e6, #d2b48c);
+  border-radius: 30px 30px 20px 20px / 50px 50px 30px 30px;
+  box-shadow:
+    inset 0 0 10px #caa76e,
+    0 8px 15px rgba(171, 94, 31, 0.4);
+  margin: 0 auto;
+  position: relative;
+  z-index: 1;
+}
+
+/* Bottle Cap */
+.bottle-cap {
+  width: 50px;
+  height: 40px;
+  background: linear-gradient(135deg, #bb8b39, #c2a05f);
+  border-radius: 10px 10px 6px 6px;
+  box-shadow:
+    0 2px 5px rgba(108, 75, 36, 0.7);
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 2;
+}
+
+/* Spray Particles (smoke or scent vapor) */
+.bottle-spray {
+  position: absolute;
+  top: -40px;
+  left: 50%;
+  width: 140px;
+  height: 80px;
+  pointer-events: none;
+  transform: translateX(-50%);
+  overflow: visible;
+  z-index: 3;
+}
+
+.spray-particle {
+  position: absolute;
+  bottom: 0;
+  width: 10px;
+  height: 10px;
+  background: radial-gradient(circle at center, rgba(212, 182, 122, 0.7), transparent 70%);
+  border-radius: 50%;
+  opacity: 0.8;
+  animation-name: sprayRise;
+  animation-timing-function: ease-out;
+  animation-iteration-count: infinite;
+  animation-direction: alternate;
+  filter: drop-shadow(0 0 2px rgba(212, 182, 122, 0.6));
+}
+
+/* Position each spray particle with varying delay and left */
+.spray-particle:nth-child(1) {
+  left: 5%;
+  animation-duration: 1.8s;
+  animation-delay: 0s;
+  width: 9px;
+  height: 9px;
+}
+.spray-particle:nth-child(2) {
+  left: 30%;
+  animation-duration: 2.3s;
+  animation-delay: 0.4s;
+  width: 11px;
+  height: 11px;
+}
+.spray-particle:nth-child(3) {
+  left: 55%;
+  animation-duration: 1.5s;
+  animation-delay: 0.2s;
+  width: 8px;
+  height: 8px;
+}
+.spray-particle:nth-child(4) {
+  left: 75%;
+  animation-duration: 2s;
+  animation-delay: 0.1s;
+  width: 10px;
+  height: 10px;
+}
+.spray-particle:nth-child(5) {
+  left: 90%;
+  animation-duration: 2.1s;
+  animation-delay: 0.3s;
+  width: 9px;
+  height: 9px;
+}
+
+@keyframes sprayRise {
+  from {
+    transform: translateY(0) scale(1);
+    opacity: 0.7;
+  }
   to {
-    transform: rotate(360deg);
+    transform: translateY(-60px) scale(1.3);
+    opacity: 0;
   }
 }

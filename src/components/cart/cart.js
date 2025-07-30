@@ -2,10 +2,12 @@ import React, { useEffect, useState } from "react";
 import { FaShoppingBag, FaTrashAlt, FaShoppingCart, FaLock } from "react-icons/fa";
 import { motion } from "framer-motion";
 import { useCart } from "../../services/cartContext";
-import { getCartPrice, submitOrder } from "../../services/api";
+import { getCartPrice, submitOrder, fetchAccountDetails, fetchUserOrders } from "../../services/api";
 import { indianStatesAndCities } from "../../constants/location";
 import { updateAccountDetails } from "../../services/api"; 
-import { Link } from "react-router-dom";
+import { Link , useNavigate} from "react-router-dom";
+import Loader from "../loader/loader";
+import ErrorPopup from "../error-popup/Error-popup";
 import "./cart.css";
 
 const bannerContentVariants = {
@@ -22,6 +24,7 @@ const itemVariants = {
 };
 
 function CartPage() {
+  const navigate = useNavigate();
   const { cart, addToCart, removeFromCart, clearCart } = useCart();
   // inside your component
 const [loading, setLoading] = useState(false);
@@ -29,13 +32,16 @@ const [loading, setLoading] = useState(false);
 const [user, setUser] = useState(() => JSON.parse(localStorage.getItem("googleUser")) || {});
 const [account, setAccount] = useState(() => JSON.parse(localStorage.getItem("accountDetails")) || {});
 
+
+
   // Coupon, discount, payment
   const [coupon, setCoupon] = useState("");
   const [couponApplied, setCouponApplied] = useState(false);
   const [discount, setDiscount] = useState(0);
   const [appliedOfferCode, setAppliedOfferCode] = useState(null);
 
-
+   const [orders, setOrders] = useState([]);
+   const [errorPopup, setErrorPopup] = useState({ show: false, message: "" });
   // Address
   const [address, setAddress] = useState(null);
   const [addressForm, setAddressForm] = useState({
@@ -64,14 +70,53 @@ const [account, setAccount] = useState(() => JSON.parse(localStorage.getItem("ac
 
   // Load account address and login status from localStorage
   useEffect(() => {
-    const googleUser = localStorage.getItem("googleUser");
-    const account = JSON.parse(localStorage.getItem("accountDetails") || "{}");
-    setIsLoggedIn(!!googleUser && !!account);
-    if (account?.address) {
-      setAddress(account.address);
-      setAddressForm(account.address);
+
+    async function fetchUserData() {
+      try {
+        const storedUser = localStorage.getItem('googleUser');
+        const storedAccount = localStorage.getItem('accountDetails');
+
+        if (!user && !storedUser) {
+          navigate('/login');
+          return;
+        }
+        if (!user && storedUser) {
+          setUser(JSON.parse(storedUser));
+        }
+
+        if (!account && storedAccount) {
+          const acc = JSON.parse(storedAccount);
+          setAccount(acc);
+          setAddress(acc.address || null);
+          setAddressForm(acc.address || { line1:'', line2:'', city:'', state:'', pincode:'' });
+        }
+
+        if (user) {
+          setLoading(true);
+          const [freshAccount, userOrders] = await Promise.all([
+            fetchAccountDetails(),
+            fetchUserOrders(user.id)
+          ]);
+          setAccount(freshAccount);
+          setIsLoggedIn(true)
+          setAddress(freshAccount.address || null);
+          setAddressForm(freshAccount.address || { line1:'', line2:'', city:'', state:'', pincode:'' });
+          setOrders(userOrders);
+
+          localStorage.setItem('googleUser', JSON.stringify(user));
+          localStorage.setItem('accountDetails', JSON.stringify(freshAccount));
+        }
+        
+      } catch (error) {
+        console.error(error);
+        setErrorPopup({ show: true, message: 'We are currently facing difficulty. Sorry for the inconvenience.' });
+      } finally {
+        setLoading(false);
+      }
     }
-  }, []);
+
+    fetchUserData();
+  }, [user, navigate]); 
 
   // Update price from backend whenever cart or coupon changes  
 useEffect(() => {
@@ -104,8 +149,10 @@ useEffect(() => {
         setAppliedOfferCode(null);
         alert("Coupon is invalid or expired");
       }
+      setLoading(false);
     } catch (e) {
       setDiscount(0);
+      setLoading(false);
       setCouponApplied(false);
       setAppliedOfferCode(null);
     }
@@ -122,6 +169,10 @@ useEffect(() => {
     }
     setCouponApplied(true);
   };
+
+  const closeErrorPopup = () => {
+    setErrorPopup(false)
+  }
 
   const handleRemoveCoupon = () => {
     setCoupon("");
@@ -145,6 +196,7 @@ useEffect(() => {
     }
 
     try {
+      setLoading(true);
       const orderPayload = {
         products: cart.map((item) => `${item.name} (x${item.qty})`),
         coupon: couponApplied ? coupon : "",
@@ -163,7 +215,8 @@ useEffect(() => {
       setAddress(null);
     } catch (error) {
       console.error("❌ Error submitting order:", error);
-      alert("❌ Failed to place order. Please try again later.");
+      setLoading(false);
+      setErrorPopup(true,"We are Facing technial Issue!")
     }
   };
 
@@ -208,6 +261,8 @@ const handleAddressSave = async (e) => {
 
   return (
     <div className="cart-page">
+       {loading && <Loader />}
+      {errorPopup.show && <ErrorPopup message={errorPopup.message} onClose={closeErrorPopup} />}
       {/* Banner */}
       <section className="banner">
         <motion.div

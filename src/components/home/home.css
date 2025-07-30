@@ -509,6 +509,10 @@ main {
   max-width: 380px;
   margin: 0 0.5rem 1.5rem 0.5rem;
   box-sizing: border-box;
+  display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
 }
 
 /* ========== Product Card ========== */
@@ -635,8 +639,6 @@ main {
     padding: 32px 0 12px 0;
   }
   .container {
-    min-width: 180px;
-    max-width: 320px;
     padding: 0.7rem;
   }
 }
@@ -645,7 +647,7 @@ main {
   .categories-grid { gap: 0.7rem; }
   .category-col { min-width: 140px; }
   .perfume-section { gap: 1rem; }
-  .container { min-width: 140px; max-width: 260px; padding: 0.5rem; }
+  .container { padding: 0.5rem; }
 }
 
 @media (max-width: 900px) {

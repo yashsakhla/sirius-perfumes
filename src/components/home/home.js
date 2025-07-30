@@ -24,6 +24,8 @@ import "./home.css";
 import Loader from "../loader/loader";
 import { Link } from "react-router-dom";
 
+import ShiningLoader from "../shiningLoader/ShiningLoader";
+
 
 // 🎞️ Animation Variants
 const bannerContentVariants = {
@@ -97,20 +99,25 @@ function Home() {
   const [perfumes, setPerfumes] = useState([]);
   const [loading, setLoading] = useState(true);
 
+  const [showShineLoader, setShowShineLoader] = useState(false);   // <-- New state
+  const [showErrorPopup, setShowErrorPopup] = useState(false);     // <-- For popup
+
   const leftCategories = [categories[0], categories[1]];
   const centerCategory = categories[2];
   const rightCategories = [categories[3], categories[4]];
 
   useEffect(() => {
+    setShowShineLoader(true);
     const fetchData = async () => {
       try {
         const data = await getGroupedProducts();
         setPerfumes(data);
-        setLoading(false)
+        setShowShineLoader(false); // Hide popup if successful
       } catch (error) {
-        console.error("Failed to fetch perfumes:", error);
+        setPerfumes([]);
+        setShowErrorPopup(true);  // Show popup
       } finally {
-        setLoading(false);
+        setShowShineLoader(false);
       }
     };
     fetchData();
@@ -208,13 +215,13 @@ function Home() {
         viewport={{ once: true, amount: 0.2 }}
         style={{ position: "relative" }} // needed for loader overlay positioning
       >
-        {loading && (
-          <div className="loader-overlay">
-            <Loader />
+        {showShineLoader && (
+          <div className="shining-loader-overlay">
+            <ShiningLoader />
           </div>
         )}
 
-        {!loading && perfumes.map((group, i) => (
+        {!showShineLoader  && perfumes.map((group, i) => (
           <motion.div
             className="container"
             key={i}
