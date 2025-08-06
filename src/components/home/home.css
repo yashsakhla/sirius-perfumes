@@ -76,6 +76,11 @@ main {
   transition: background 0.2s, color 0.2s, border 0.2s;
 }
 
+.btn-explore .link {
+  color: #000;
+  text-decoration: none;
+}
+
 .btn-explore:hover {
   background: #ede3d2;
   border-color: #d6c6a8;

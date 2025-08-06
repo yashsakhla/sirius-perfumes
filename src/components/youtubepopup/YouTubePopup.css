@@ -1,0 +1,28 @@
+.yt-popup-overlay {
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,0.65); z-index:10000;
+  display: flex; justify-content:center; align-items: center;
+}
+.yt-popup-content {
+  background: #000;
+  border-radius: 14px;
+  position: relative;
+  padding: 0.5rem;
+  box-shadow: 0 6px 24px rgba(0,0,0,0.35);
+  display: flex; flex-direction: column; align-items: center;
+}
+.yt-popup-close {
+  position: absolute; top: 7px; right: 10px;
+  background: #fff; color:#222;
+  border: none; border-radius: 16px;
+  font-size: 1.6rem; width: 32px; height: 32px;
+  cursor: pointer; font-weight: bold;
+}
+.yt-popup-content iframe {
+  width: 370px; height: 210px;
+  max-width: 80vw; max-height: 45vw;
+  border-radius: 8px;
+}
+@media (min-width: 600px) {
+  .yt-popup-content iframe { width: 560px; height: 315px; }
+}

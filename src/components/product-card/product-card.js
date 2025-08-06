@@ -29,10 +29,26 @@ function ProductCard({ product, qty, addToCart, removeFromCart, className, index
         <div className="left">
           <h3>{product.name}</h3>
           <p>{product.size} Bottle</p>
-          <p className="price">₹ {product.price}</p>
+          <div className="price-row">
+            {/* Show basic/original price with strikethrough if both present */}
+            {product.basicPrice && product.discountedPrice && product.basicPrice !== product.discountedPrice ? (
+              <>
+                <div className="actual-price">
+                  ₹{Number(product.basicPrice).toFixed(2)}
+                </div>
+                <div className="discounted-price">
+                  ₹{Number(product.discountedPrice).toFixed(2)}
+                </div>
+              </>
+            ) : (
+              // Fallback: only single price
+              <div className="discounted-price">
+                ₹{Number(product.discountedPrice ?? product.price).toFixed(2)}
+              </div>
+            )}
+          </div>
         </div>
         <div className="cart-actions">
-          {console.log(qty)}
           {qty === 0 ? (
             <button className="add-button" onClick={() => addToCart(product)}>
               ADD <FaArrowUp size={15} className="arrow-icon"/>

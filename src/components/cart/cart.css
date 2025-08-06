@@ -351,6 +351,7 @@
 
 .cart-address-add-btn,
 .cart-address-edit-btn,
+.cart-address-cancel-btn,
 .cart-address-save-btn {
   background: #eabf7b;
   border: none;
@@ -362,6 +363,10 @@
   font-weight: 400;
   margin-top: 0.7rem;
   transition: background 0.2s;
+}
+
+.cart-address-cancel-btn{
+ background: #949494
 }
 
 .cart-address-form {
@@ -604,7 +609,6 @@
   border-top: 1.5px solid #dcdcdc;
   padding-top: 1rem;
   max-width: 320px;
-  margin-left: auto;
 }
 
 .cart-summary-row {
@@ -710,3 +714,22 @@
   color: #28a745;
 }
 
+
+.price-row {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.actual-price {
+  color: #888;
+  text-decoration: line-through;
+  font-size: 1rem;
+  font-weight: 400;
+}
+
+.discounted-price {
+  color: #28a745;
+  font-size: 1.12rem;
+  font-weight: bold;
+}

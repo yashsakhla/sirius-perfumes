@@ -13,6 +13,7 @@ import { CartProvider } from './services/cartContext';
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { GoogleOAuthProvider } from '@react-oauth/google';
 import ProtectedRoute from './components/guard/protcatedRoute';
+import { ScrollToTop } from './shared/ScrollToTop';
 import Account from './components/account/account';
 import { Navigate } from 'react-router-dom';
 import ExclusiveMembers from './components/members/members';
@@ -28,6 +29,7 @@ function App() {
             <ToasterProvider>
               <CartProvider>
                 <Router>
+                  <ScrollToTop />
                   <Header />
                   <Routes>
                     <Route path="/home" element={<Home />} />

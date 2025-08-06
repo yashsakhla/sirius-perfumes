@@ -14,7 +14,8 @@ import Popup from "../popup/popup";
 import Scrolltextbar from "../scroollingtextbar/scrollingtextbar";
 import ProductCard from "../product-card/product-card";
 import { getGroupedProducts } from "../../services/api";
-
+import YouTubePopup from "../youtubepopup/YouTubePopup";
+import FixedBuyNow from "../fixedButton/FixedBuyNow";
 import cat1 from "../../images/cat-1.jpg";
 import cat2 from "../../images/cat-2.jpg";
 import cat3 from "../../images/cat-3.jpg";
@@ -101,6 +102,7 @@ function Home() {
 
   const [showShineLoader, setShowShineLoader] = useState(false);   // <-- New state
   const [showErrorPopup, setShowErrorPopup] = useState(false);     // <-- For popup
+  const [youtubeOpen, setYoutubeOpen] = useState(false);
 
   const leftCategories = [categories[0], categories[1]];
   const centerCategory = categories[2];
@@ -128,6 +130,12 @@ function Home() {
       <Popup />
       <Scrolltextbar />
 
+       <YouTubePopup
+      open={youtubeOpen}
+      onClose={() => setYoutubeOpen(false)}
+      videoId="https://www.youtube.com/embed/WhKJl9W_1Fw?controls=0&autoplay=1&loop=1&playlist=WhKJl9W_1Fw&modestbranding=1&showinfo=0"
+    />
+
       {/* 🪄 Banner */}
       <motion.section
         className="banner-home"
@@ -147,8 +155,8 @@ function Home() {
             Elegant. Timeless. Unforgettable.
           </motion.p>
           <motion.div className="banner-buttons" variants={itemVariants}>
-            <button className="btn-explore">EXPLORE NOW</button>
-            <div className="btn-play-group">
+            <button className="btn-explore"> <Link className="link" to="/shop">EXPLORE NOW</Link></button>
+            <div className="btn-play-group" onClick={() => setYoutubeOpen(true)}>
               <span className="btn-play-text">PLAY VIDEO</span>
               <span className="btn-play-line"></span>
               <button className="btn-play">
@@ -424,6 +432,7 @@ function Home() {
           <img src={require("../../images/insta-4.jpg")} alt="" />
         </div>
       </motion.section>
+      <FixedBuyNow count={cart.length} />
     </main>
   );
 }

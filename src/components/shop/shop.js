@@ -6,6 +6,7 @@ import ProductCard from "../product-card/product-card";
 import { useCart } from "../../services/cartContext";
 import { getAllProducts } from "../../services/api";
 import ShiningLoader from "../shiningLoader/ShiningLoader";
+import FixedBuyNow from "../fixedButton/FixedBuyNow";
 import "./shop.css";
 
 const bannerContentVariants = {
@@ -136,6 +137,7 @@ function ShopPage() {
               )}
             </section>
           </div>
+          <FixedBuyNow count={cart.length} />
         </div>
       )}
     </>

@@ -1,0 +1,33 @@
+.fixed-buy-btn {
+  position: fixed;
+  bottom: 24px; 
+  right: 20px;
+  z-index: 9000;
+  background: #eabf7b;
+  color: #fff;
+  border: none;
+  border-radius: 24px;
+  font-size: 1.13rem;
+  font-weight: 600;
+  box-shadow: 0 3px 12px rgba(90,63,23,0.13);
+  padding: 13px 27px 13px 19px;
+  cursor: pointer;
+  display: flex; align-items: center;
+  gap: 8px;
+  outline: none;
+  transition: background 0.2s;
+}
+.fixed-buy-btn:hover {
+  background: #d5a949;
+}
+.fixed-buy-count {
+  background: #fff;
+  color: #eabf7b;
+  border-radius: 15px;
+  font-size: 1rem;
+  font-weight: bold;
+  margin-left: 9px; padding: 3px 12px;
+  min-width: 28px; display:inline-block; text-align:center;
+  box-shadow: 0 2px 6px rgba(150,120,0,0.10);
+  border: 2px solid #fff3de;
+}

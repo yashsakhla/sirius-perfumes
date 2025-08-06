@@ -32,7 +32,7 @@ function Header() {
           <div className="nav-row">
             <Link to="/">Home</Link>
             <Link to="/shop">Shop</Link>
-            <Link to="/members">Shop</Link>
+            <Link to="/members">Exculsive Members</Link>
           </div>
           <div className="nav-row">
             <Link to="/cart" className="icon-link" aria-label="Bags">

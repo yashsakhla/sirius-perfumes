@@ -244,6 +244,11 @@
   cursor: not-allowed;
 }
 
+.disable{
+  opacity: 50%;
+  pointer-events: none;
+}
+
 .empty-cart-msg,
 .empty-history-msg,
 .loading-text {
@@ -253,7 +258,11 @@
   margin-top: 1.2rem;
   font-weight: 400;
 }
-
+.info-input-col{
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+}
 .order-history-list {
   display: flex;
   flex-direction: column;
