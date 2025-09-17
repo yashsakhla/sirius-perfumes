@@ -274,12 +274,12 @@ function CartPage() {
       };
       await submitOrder(orderPayload);
       alert("🎉 Your product has been ordered successfully!");
+      setLoading(false);
       clearCart();
       setCoupon("");
       setCouponApplied(false);
       setDiscount(0);
       setAddress(null);
-      setPhone("");
     } catch (error) {
       console.error("❌ Error submitting order:", error);
       setLoading(false);
@@ -648,6 +648,7 @@ function CartPage() {
               >
                 Buy Now
               </button>
+              {isPincodeValid === false && <div style={{ color: "red", marginTop: 4 }}>❌ Please Update your Address</div>}
             </>
           )}
         </section>

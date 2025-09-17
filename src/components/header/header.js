@@ -32,7 +32,7 @@ function Header() {
           <div className="nav-row">
             <Link to="/">Home</Link>
             <Link to="/shop">Shop</Link>
-            <Link to="/members">Exculsive Members</Link>
+            {/* <Link to="/members">Exculsive Members</Link> */}
           </div>
           <div className="nav-row">
             <Link to="/cart" className="icon-link" aria-label="Bags">
@@ -80,9 +80,9 @@ function Header() {
           <Link to="/shop" onClick={() => setSidebarOpen(false)}>
             Shop
           </Link>
-          <Link to="/members" onClick={() => setSidebarOpen(false)}>
+          {/* <Link to="/members" onClick={() => setSidebarOpen(false)}>
             Exculsive Members
-          </Link>
+          </Link> */}
           <Link
             to="/cart"
             className="icon-link"

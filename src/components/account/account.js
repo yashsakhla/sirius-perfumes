@@ -73,42 +73,43 @@ export default function Account() {
   }, [addressInput.pincode]);
 
   // Pincode validation effect including city/state match
-  useEffect(() => {
-    if (debouncedPincode.length === 6) {
-      fetch(`https://api.postalpincode.in/pincode/${debouncedPincode}`)
-        .then((res) => res.json())
-        .then((data) => {
-          if (data[0].Status === "Success") {
-            const postOffices = data[0].PostOffice || [];
+useEffect(() => {
+  // Only run pincode validation if all required address fields are present
+  if (
+    !addressInput.city ||
+    !addressInput.state ||
+    !addressInput.pincode ||
+    addressInput.pincode.length !== 6
+  ) {
+    setPincodeInfo(null);
+    setIsPincodeValid(null);
+    return;
+  }
 
-            // Check if city and state matches any PostOffice entries (case-insensitive)
-            const match = postOffices.some(
-              (po) =>
-                po.District.toLowerCase() === (addressInput.city || "").toLowerCase() &&
-                po.State.toLowerCase() === (addressInput.state || "").toLowerCase()
-            );
-
-            setPincodeInfo(postOffices);
-            if (match) {
-              setIsPincodeValid(true);
-            } else {
-              setIsPincodeValid(false); // City or state mismatch
-            }
-          } else {
-            setPincodeInfo(null);
-            setIsPincodeValid(false); // Pincode not found
-          }
-        })
-        .catch((err) => {
-          console.error("API Error:", err);
-          setPincodeInfo(null);
-          setIsPincodeValid(false);
-        });
-    } else {
+  fetch(`https://api.postalpincode.in/pincode/${addressInput.pincode}`)
+    .then((res) => res.json())
+    .then((data) => {
+      if (data.Status === "Success") {
+        const postOffices = data.PostOffice || [];
+        const match = postOffices.some(
+          (po) =>
+            po.District.toLowerCase() === addressInput.city.toLowerCase() &&
+            po.State.toLowerCase() === addressInput.state.toLowerCase()
+        );
+        setPincodeInfo(postOffices);
+        setIsPincodeValid(match);
+      } else {
+        setPincodeInfo(null);
+        setIsPincodeValid(false);
+      }
+    })
+    .catch((err) => {
+      console.error("API Error:", err);
       setPincodeInfo(null);
-      setIsPincodeValid(null);
-    }
-  }, [debouncedPincode, addressInput.city, addressInput.state]);
+      setIsPincodeValid(false);
+    });
+}, [debouncedPincode, addressInput.city, addressInput.state]);
+
 
   // Fetch account and orders on mount and if user changes
   useEffect(() => {

@@ -88,10 +88,10 @@ const columnVariants = {
 
 // ✨ Static Categories for Grid
 const categories = [
-  { label: "Premium", title: "Floral", best: "Best For: Daytime, Spring", img: cat1 },
-  { label: "Premium", title: "Woody", best: "Best For: Evening, Autumn", img: cat2 },
-  { label: "Premium", title: "Fresh", best: "Best For: Summer, Everyday", img: cat3 },
-  { label: "Premium", title: "Oriental", best: "Best For: Night, Winter", img: cat4 },
+  { label: "Premium", title: "Wolftrail", best: "Best For: Daytime, Spring", img: cat1 },
+  { label: "Premium", title: "Ocean Drift", best: "Best For: Evening, Autumn", img: cat2 },
+  { label: "Premium", title: "Undress", best: "Best For: Summer, Everyday", img: cat3 },
+  { label: "Premium", title: "Night Thirst", best: "Best For: Night, Winter", img: cat4 },
   { label: "Premium", title: "Citrus", best: "Best For: Sport, Morning", img: cat5 },
 ];
 
@@ -149,7 +149,7 @@ function Home() {
             PERFUME COLLECTION
           </motion.span>
           <motion.h1 className="banner-header" variants={itemVariants}>
-            Discover Your Signature Scent
+           Add value to your <p className="b-text">Lifestyle</p>.
           </motion.h1>
           <motion.p className="banner-desc" variants={itemVariants}>
             Elegant. Timeless. Unforgettable.
@@ -362,9 +362,9 @@ function Home() {
           <div className="market-stats-row">
             <div className="market-stat">
               <span className="market-stat-value">
-                4300<span className="market-stat-unit">K</span>
+                1<span className="market-stat-unit">K+</span>
               </span>
-              <div className="market-stat-label">Products Sold</div>
+              <div className="market-stat-label"> Bottles sold in 3 months</div>
             </div>
             <div className="market-divider"></div>
             <div className="market-stat">
@@ -376,16 +376,16 @@ function Home() {
             <div className="market-divider"></div>
             <div className="market-stat">
               <span className="market-stat-value">
-                42<span className="market-stat-unit">K</span>
+                90%<span className="market-stat-unit">+</span>
               </span>
               <div className="market-stat-label">Customers Satisfied</div>
             </div>
             <div className="market-divider"></div>
             <div className="market-stat">
               <span className="market-stat-value">
-                0.01<span className="market-stat-unit">%</span>
+                75%<span className="market-stat-unit">+</span>
               </span>
-              <div className="market-stat-label">Defective Returns</div>
+              <div className="market-stat-label">Customers returned for more!</div>
             </div>
           </div>
         </div>
@@ -415,8 +415,7 @@ function Home() {
           <span className="insta-label">INSTA SHOP</span>
           <h2 className="insta-title">Tag Us on Instagram</h2>
           <p className="insta-desc">
-            Praesent in nunc vel urna consequat mattis eget vel libero.
-            Phasellus pellentesque Proin tempus tempor diam.
+           Every drop is crafted with premium oils, ethyl alcohol, and fine fixatives — ensuring your presence is unforgettable.
           </p>
         </div>
         <div className="insta-img insta-img-right">

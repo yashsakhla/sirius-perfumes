@@ -20,11 +20,15 @@ function ProductCard({ product, qty, addToCart, removeFromCart, className, index
     <motion.div
       className={`product-card ${className}`}
       variants={cardVariants}
-      initial="hidden"
+      initial="hidden" 
       animate="visible"
       custom={index}
     >
-      <img src={require(`../../images/product-2.webp`)} alt={product.name} />
+      <img 
+  src={product.image} 
+  alt={product.name} 
+/>
+
       <div className="product-detail-row">
         <div className="left">
           <h3>{product.name}</h3>

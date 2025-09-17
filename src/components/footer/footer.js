@@ -15,13 +15,13 @@ const Footer = () => (
     <div className="footer-section footer-social">
       <div className="footer-title">We are at Social Media</div>
       <div className="footer-social-icons">
-        <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" className="footer-icon">
+        <a href="https://www.instagram.com/siriusperfumes.official?igsh=MW56ZWtobzZqcmw0cw==" target="_blank" rel="noopener noreferrer" className="footer-icon">
           <FaInstagram />
         </a>
         <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" className="footer-icon">
           <FaFacebookF />
         </a>
-        <a href="https://twitter.com" target="_blank" rel="noopener noreferrer" className="footer-icon">
+        <a href="https://wa.me/+919370917752" target="_blank" rel="noopener noreferrer" className="footer-icon">
           <FaWhatsapp />
         </a>
         <a href="https://youtube.com" target="_blank" rel="noopener noreferrer" className="footer-icon">

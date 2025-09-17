@@ -27,18 +27,18 @@ export default function OfferPopup() {
           {/* Left side - Image */}
           <div className="offer-popup-image">
             <img
-              src="https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=400&q=80"
+              src={require(`../../images/sirius-5.jpg`)}
               alt="Special Offer"
             />
           </div>
 
           {/* Right side - Text */}
           <div className="offer-popup-text">
-            <h2>Membership Surprise!</h2>
-            <p>Unlock access to exclusive perfumes!</p>
-    <p className="offer-popup-message">
-      Shop now—lucky customers get a membership coupon for discounts.
-    </p>
+  <h2>Surprise Sale!</h2>
+  <p>Buy the best perfumes—crafted to captivate your senses.</p>
+  <p className="offer-popup-message">
+    Shop now and experience luxurious fragrances at special prices. Don’t miss out—exclusive deals for a limited time!
+  </p>
     <button
       className="shop-button"
       onClick={() => window.location.href = '/shop'}
