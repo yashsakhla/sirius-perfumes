@@ -1,1 +1,1 @@
-export const url = "https://sirius-backend-ahsc.onrender.com"
+export const url = "https://api.siriusperfumes.com"
