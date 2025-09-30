@@ -153,7 +153,7 @@ function Home() {
           </motion.h1>
           <motion.p className="banner-desc" variants={itemVariants}>
             Elegant. Timeless. Unforgettable.
-          </motion.p>
+          </motion.p>  
           <motion.div className="banner-buttons" variants={itemVariants}>
             <button className="btn-explore"> <Link className="link" to="/shop">EXPLORE NOW</Link></button>
             <div className="btn-play-group" onClick={() => setYoutubeOpen(true)}>
