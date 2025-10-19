@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { motion } from "framer-motion";
 import { FaArrowUp } from "react-icons/fa";
 import "./product-card.css";
@@ -10,32 +11,38 @@ const cardVariants = {
     transition: {
       delay: i * 0.15,
       duration: 0.6,
-      ease: [0.23, 1, 0.32, 1]
-    }
+      ease: [0.23, 1, 0.32, 1],
+    },
   }),
 };
 
-function ProductCard({ product, qty, addToCart, removeFromCart, className, index = 0 }) {
+function ProductCard({
+  product,
+  qty,
+  addToCart,
+  removeFromCart,
+  className,
+  index = 0,
+}) {
+  const [showFullDesc, setShowFullDesc] = useState(false);
+
   return (
     <motion.div
       className={`product-card ${className}`}
       variants={cardVariants}
-      initial="hidden" 
+      initial="hidden"
       animate="visible"
       custom={index}
     >
-      <img 
-  src={product.image} 
-  alt={product.name} 
-/>
-
+      <img src={product.image} alt={product.name} />
       <div className="product-detail-row">
         <div className="left">
           <h3>{product.name}</h3>
           <p>{product.size} Bottle</p>
           <div className="price-row">
-            {/* Show basic/original price with strikethrough if both present */}
-            {product.basicPrice && product.discountedPrice && product.basicPrice !== product.discountedPrice ? (
+            {product.basicPrice &&
+            product.discountedPrice &&
+            product.basicPrice !== product.discountedPrice ? (
               <>
                 <div className="actual-price">
                   ₹{Number(product.basicPrice).toFixed(2)}
@@ -45,7 +52,6 @@ function ProductCard({ product, qty, addToCart, removeFromCart, className, index
                 </div>
               </>
             ) : (
-              // Fallback: only single price
               <div className="discounted-price">
                 ₹{Number(product.discountedPrice ?? product.price).toFixed(2)}
               </div>
@@ -55,20 +61,33 @@ function ProductCard({ product, qty, addToCart, removeFromCart, className, index
         <div className="cart-actions">
           {qty === 0 ? (
             <button className="add-button" onClick={() => addToCart(product)}>
-              ADD <FaArrowUp size={15} className="arrow-icon"/>
+              ADD <FaArrowUp size={15} className="arrow-icon" />
             </button>
           ) : (
             <div className="add-remove-group">
-              <button className="remove-button" onClick={() => removeFromCart(product)}>
+              <button
+                className="remove-button"
+                onClick={() => removeFromCart(product)}
+              >
                 -
               </button>
               <span className="product-qty">{qty}</span>
-              <button className="add-more-button" onClick={() => addToCart(product)}>
+              <button
+                className="add-more-button"
+                onClick={() => addToCart(product)}
+              >
                 +
               </button>
             </div>
           )}
         </div>
+      </div>
+      <div
+        className={`product-desc${showFullDesc ? " expanded" : ""}`}
+        onClick={() => setShowFullDesc(!showFullDesc)}
+        title={showFullDesc ? "Click to collapse" : "Click to expand"}
+      >
+        {product.description || "No description available."}
       </div>
     </motion.div>
   );

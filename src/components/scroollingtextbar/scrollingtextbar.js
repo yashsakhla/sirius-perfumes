@@ -2,10 +2,10 @@ import React from "react";
 import "./scrollingtextbar.css";
 
 const messages = [
-  "Free shipping above ₹1000",
-  "Buying first time? Get 50% off upto ₹75",
-  "Buy 3 perfumes and get 1 free",
-  "Special festival offers live now!"
+  "Bold. Elegant. Unforgettable.",
+  "Not just perfume — personality.",
+  "Born to stand out, not blend in.",
+  "Your vibe, bottled."
 ];
 
 export default function ScrollingTextBar() {

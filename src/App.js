@@ -17,7 +17,10 @@ import { ScrollToTop } from './shared/ScrollToTop';
 import Account from './components/account/account';
 import { Navigate } from 'react-router-dom';
 import ExclusiveMembers from './components/members/members';
-
+import Policy from './components/policy/policy';
+import OrderConfirmed from './components/confirm-order/confirm-order';
+import OrderPending from './components/confirm-order/pending.order';
+import OrderFailed from './components/confirm-order/failed.order';
 import { UserProvider } from './services/userContext';
 
 function App() {
@@ -39,7 +42,10 @@ function App() {
                     <Route path="/members" element={<ExclusiveMembers />} />
                     <Route path="/account" element={<ProtectedRoute><Account /></ProtectedRoute>} />
                     <Route path="/order" element={<ProtectedRoute><OrderHistoryPage /></ProtectedRoute>} />
-                    {/* other routes */}
+                    <Route path="/privacy-policy" element={<Policy />} />
+                    <Route path="/order-confirmed" element={<OrderConfirmed />} />
+                    <Route path="/order-pending" element={<OrderPending />} />
+                    <Route path="/order-failed" element={<OrderFailed />} />
                     <Route path="*" element={<Navigate to="/home" replace />} />
                   </Routes>
                   <Footer />

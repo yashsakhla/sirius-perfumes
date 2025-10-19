@@ -180,6 +180,11 @@
     display: none;
     margin-left: 0;
   }
+
+  .cart-badge{
+    top: 0px;
+    right: 5px;
+  }
 }
 
 @media (max-width: 768px) {

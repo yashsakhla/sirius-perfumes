@@ -314,14 +314,7 @@
   background: #eabf7b;
   color: #222;
 }
-.order-card {
-  background: #fff;
-  border: 1px solid #ddd;
-  padding: 1rem;
-  margin-bottom: 1.5rem;
-  border-radius: 6px;
-  color: #000;
-}
+
 
 .order-header {
   display: flex;
@@ -470,6 +463,224 @@
 
 /* Your other existing styles (responsive, forms, etc.) ... */
 
+.order-card {
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 4px 14px rgba(0,0,0,0.09);
+  padding: 24px;
+  margin: 20px 0;
+  transition: box-shadow 0.15s;
+}
+.order-card__row {
+  display: flex;
+  align-items: center;
+  margin-bottom: 20px;
+}
+.order-card__row--top {
+  justify-content: space-between;
+}
+.order-card__product-image {
+  width: 80px;
+  height: 80px;
+  border-radius: 12px;
+  object-fit: cover;
+  margin-right: 20px;
+  border: 2px solid #eee;
+}
+.order-card__details {
+  display: flex;
+  flex-direction: column;
+}
+.order-card__payment-status {
+  font-size: 15px;
+  font-weight: bold;
+  color: #fff;
+  padding: 4px 12px;
+  border-radius: 8px;
+  align-self: flex-start;
+}
+.order-card__payment-status--COMPLETED {
+  background: #26d07c;
+}
+.order-card__payment-status--FAILED {
+  background: #f04747;
+}
+.order-card__payment-status--PENDING {
+  background: #fbc500;
+  color: #333;
+}
+.order-card__product-title {
+  font-size: 18px;
+  margin-top: 10px;
+  color: #222;
+}
+
+.order-card__row--info {
+  justify-content: space-between;
+  flex-wrap: wrap;
+  border-top: 1px solid #f1f1f1;
+  border-bottom: 1px solid #f1f1f1;
+  padding: 14px 0;
+  font-size: 14px;
+      flex-direction: column;
+    align-items: start;
+}
+.order-card__info-col {
+  min-width: 110px;
+  margin-bottom: 8px;
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.order-card__info-col span {
+  color: #777;
+  margin-right: 4px;
+}
+
+.order-card__info-col strong {
+  color: #333;
+}
+
+.order-card__row--steps {
+  justify-content: flex-start;
+  margin-top: 10px;
+}
+
+.payment-status-text{
+  font-size: 1.5rem;
+}
+
+.order-card__shipping-stepper {
+  display: flex;
+  width: 100%;
+  justify-content: space-between;
+  gap: 12px;
+  margin: 0 2px;
+}
+
+.order-card__shipping-stepper .step {
+  position: relative;
+  padding: 8px 14px;
+  border-radius: 999px;
+  background: #eaecf0;
+  color: #888;
+  font-size: 13px;
+  font-weight: 500;
+  min-width: 86px;
+  text-align: center;
+  transition: background 0.2s, color 0.2s;
+}
+.payment-status-row{
+      display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+}
+.order-card__shipping-stepper .step.active {
+  background: #3858d6;
+  color: #fff;
+}
+
+.order-card__shipping-stepper .step:not(:last-child)::after {
+  content: '';
+  display: block;
+  position: absolute;
+  right: -18px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 32px;
+  height: 4px;
+  background: #eaecf0;
+  z-index: 1;
+  border-radius: 2px;
+}
+.order-card__shipping-stepper .step.active:not(:last-child)::after {
+  background: #3858d6;
+}
+
+.order-stepper-vertical {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  background: #fff;
+  border-radius: 14px;
+}
+
+.stepper-row {
+  display: flex;
+  align-items: center;
+  position: relative;
+  width: 100%;
+}
+
+.stepper-col-left {
+  display: flex;
+  align-items: center;
+  position: relative;
+}
+
+.stepper-col {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  min-height: 42px;
+  padding: 4px 0;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.step-checkbox {
+  accent-color: #3858d6;
+  width: 19px;
+  height: 19px;
+}
+
+.step-status {
+  min-width: 90px;
+  font-size: 15px;
+  color: #888;
+  transition: color 0.3s;
+}
+.step-status.active { color: #3858d6; font-weight: 600; }
+
+.step-date {
+  font-size: 13px;
+  color: #444;
+  min-width: 90px;
+}
+
+.stepper-line {
+  position: absolute;
+  left: 9.5px;
+  top: 38px;
+  height: 34px;
+  width: 2px;
+  background: #e4e5e7;
+  z-index: 0;
+}
+
+.stepper-btn {
+  margin-top: 20px;
+  width: 100%;
+  padding: 12px 0;
+  border-radius: 8px;
+  border: none;
+  background: #3858d6;
+  color: #fff;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.stepper-btn:hover {
+  background: #2b48ab;
+}
+
+.link{
+  text-decoration: none;
+  color: #fff;
+}
 
 /* Responsive */
 
@@ -487,3 +698,4 @@
     height: 110px;
   }
 }
+

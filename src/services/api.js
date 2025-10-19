@@ -58,3 +58,18 @@ export const fetchUserOrders = async (id) => {
   return res.data;
 };
 
+
+export const createPayment = async (payload) => {
+  const res = await axiosInstance.post(`${url}/api/payment/phonepe/create`, payload);
+  return res.data;
+}
+
+export const getToken = async (payload) => {
+  const res = await axiosInstance.post(`${url}/api/payment/token`, payload);
+  return res.data;
+}
+
+export const updateOrderStatus = async (payload) => {
+  const res = await axiosInstance.post(`${url}/api/payment/update-order-status`, payload);
+  return res.data;
+}

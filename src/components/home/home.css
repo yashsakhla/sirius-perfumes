@@ -504,14 +504,14 @@ main {
   margin: 0 auto;
   flex-wrap: wrap;
   transform: translateY(100px);
-  opacity: 1;
+  opacity: 1 !important;
   transition: all 0.8s cubic-bezier(0.23, 1, 0.32, 1);
 }
 .perfume-section.visible {
   transform: translateY(0);
   opacity: 1 !important;
 }
-.container {
+.perfume-container {
   background-color: #f0e6cf;
   padding: 1rem;
   border-radius: 18px;
@@ -521,9 +521,10 @@ main {
   margin: 0 0.5rem 1.5rem 0.5rem;
   box-sizing: border-box;
   display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding-bottom: 5rem;
 }
 
 /* ========== Product Card ========== */
@@ -587,6 +588,7 @@ main {
   display: flex;
   align-items: center;
   gap: 6px;
+  z-index: 99;
 }
 .add-remove-group {
   display: flex;
@@ -649,7 +651,7 @@ main {
     gap: 1.2rem;
     padding: 32px 0 12px 0;
   }
-  .container {
+  .perfume-container {
     padding: 0.7rem;
   }
 }
@@ -658,7 +660,7 @@ main {
   .categories-grid { gap: 0.7rem; }
   .category-col { min-width: 140px; }
   .perfume-section { gap: 1rem; }
-  .container { padding: 0.5rem; }
+  .perfume-container { padding: 0.5rem; }
 }
 
 @media (max-width: 900px) {
@@ -689,11 +691,12 @@ main {
     padding: 16px 0;
     width: 95vw;
   }
-  .container {
+  .perfume-container {
     width: 100%;
     min-width: 0;
     max-width: 100%;
     margin: 0 auto 1.5rem auto;
+    padding-bottom: 5rem;
   }
   .product-card {
     padding: 10px 6px;
@@ -716,7 +719,7 @@ main {
     margin-right: 0;
     background-color: #f0e6cf8c;
   }
-  .container h2 {
+  .perfume-container h2 {
     text-align: center;
   }
   .card-row {
@@ -759,10 +762,11 @@ main {
     width: 100vw;
     opacity: 1;
   }
-  .container {
+  .perfume-container {
     padding: 0.3rem;
     border-radius: 12px;
     max-width: 98vw;
+    padding-bottom: 5rem;
   }
 }
 

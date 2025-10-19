@@ -16,11 +16,12 @@ import ProductCard from "../product-card/product-card";
 import { getGroupedProducts } from "../../services/api";
 import YouTubePopup from "../youtubepopup/YouTubePopup";
 import FixedBuyNow from "../fixedButton/FixedBuyNow";
-import cat1 from "../../images/cat-1.jpg";
-import cat2 from "../../images/cat-2.jpg";
-import cat3 from "../../images/cat-3.jpg";
-import cat4 from "../../images/cat-4.jpg";
-import cat5 from "../../images/cat-5.jpg";
+
+import sirius5 from "../../images/sirius5.JPG";
+import sirius4 from "../../images/sirius4.JPG";
+import sirius3 from "../../images/sirius3.JPG";
+import sirius2 from "../../images/sirius2.JPG";
+import sirius from "../../images/sirius1.JPG";
 import "./home.css";
 import Loader from "../loader/loader";
 import { Link } from "react-router-dom";
@@ -88,11 +89,11 @@ const columnVariants = {
 
 // ✨ Static Categories for Grid
 const categories = [
-  { label: "Premium", title: "Wolftrail", best: "Best For: Daytime, Spring", img: cat1 },
-  { label: "Premium", title: "Ocean Drift", best: "Best For: Evening, Autumn", img: cat2 },
-  { label: "Premium", title: "Undress", best: "Best For: Summer, Everyday", img: cat3 },
-  { label: "Premium", title: "Night Thirst", best: "Best For: Night, Winter", img: cat4 },
-  { label: "Premium", title: "Citrus", best: "Best For: Sport, Morning", img: cat5 },
+  { label: "Premium", title: "Wolftrail", best: "Best For: Daytime, Spring", img: sirius },
+  { label: "Premium", title: "Ocean Drift", best: "Best For: Evening, Autumn", img: sirius2 },
+  { label: "Premium", title: "Undress", best: "Best For: Summer, Everyday", img: sirius4 },
+  { label: "Premium", title: "Night Thirst", best: "Best For: Night, Winter", img: sirius3 },
+  { label: "Premium", title: "Citrus", best: "Best For: Sport, Morning", img: sirius5 },
 ];
 
 function Home() {
@@ -231,7 +232,7 @@ function Home() {
 
         {!showShineLoader  && perfumes.map((group, i) => (
           <motion.div
-            className="container"
+            className="perfume-container"
             key={i}
             variants={columnVariants}
             initial="hidden"
@@ -409,7 +410,7 @@ function Home() {
           <div className="insta-hover">
             <FaInstagram className="insta-icon" size={20} />
           </div>
-          <img src={require("../../images/insta-2.jpg")} alt="" />
+          <img src={require("../../images/banner-2.jpg")} alt="" />
         </div>
         <div className="insta-content">
           <span className="insta-label">INSTA SHOP</span>
@@ -422,13 +423,13 @@ function Home() {
           <div className="insta-hover">
             <FaInstagram className="insta-icon" size={20} />
           </div>
-          <img src={require("../../images/insta-3.jpg")} alt="" />
+          <img src={require("../../images/banner-2.jpg")} alt="" />
         </div>
         <div className="insta-img insta-img-right">
           <div className="insta-hover">
             <FaInstagram className="insta-icon" size={20} />
           </div>
-          <img src={require("../../images/insta-4.jpg")} alt="" />
+          <img src={require("../../images/insta-1.jpg")} alt="" />
         </div>
       </motion.section>
       <FixedBuyNow count={cart.length} />

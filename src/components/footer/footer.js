@@ -9,7 +9,7 @@ import {
 } from "react-icons/fa6";
 import { BsChatDotsFill } from "react-icons/bs";
 import "./footer.css";
-
+import { Link } from "react-router-dom";
 const Footer = () => (
   <footer className="main-footer">
     <div className="footer-section footer-social">
@@ -36,6 +36,11 @@ const Footer = () => (
       </span>
       <div className="footer-copyright">
         &copy; {new Date().getFullYear()} Sirius. All rights reserved.
+      </div>
+      <div>
+        <Link to="/privacy-policy" className="privacy-text">
+          Privacy Policy & Terms of Service
+        </Link>
       </div>
     </div>
     <div className="footer-divider"></div>
@@ -69,7 +74,7 @@ const Footer = () => (
     </span>
   </a>
   <a
-    href="mailto:siriusperfumes24@gmail.com"
+    href="mailto:contact@siriusperfumes.com"
     className="footer-contact-row"
     aria-label="Email"
     title="Email us"
@@ -77,7 +82,7 @@ const Footer = () => (
     <span className="footer-contact-row-icon"><FaEnvelope size={22} /></span>
     <span className="footer-contact-row-content">
       <span className="footer-contact-row-title">Mail Us</span>
-      <span className="footer-contact-row-value">siriusperfumes24@gmail.com</span>
+      <span className="footer-contact-row-value">contact@siriusperfumes.com</span>
     </span>
   </a>
   <a

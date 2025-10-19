@@ -257,3 +257,12 @@
 .footer-logo-text img{
   width: 7rem;
 }
+
+.privacy-text {
+  font-size: 0.95rem;
+  color: #555;
+  font-family: 'Outfit', sans-serif;
+  text-decoration: none;
+  margin-top: 8px;
+  transition: color 0.2s;
+}

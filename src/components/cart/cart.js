@@ -7,13 +7,17 @@ import {
   submitOrder,
   fetchAccountDetails,
   fetchUserOrders,
-  updateAccountDetails
+  updateAccountDetails,
+  getToken,
+  updateOrderStatus,
 } from "../../services/api";
 import { indianStatesAndCities } from "../../constants/location";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, createSearchParams } from "react-router-dom";
 import Loader from "../loader/loader";
 import ErrorPopup from "../error-popup/Error-popup";
 import "./cart.css";
+import { url } from "../../env.config";
+import axios from "axios";
 
 const bannerContentVariants = {
   hidden: { opacity: 0, y: 60 },
@@ -27,7 +31,6 @@ const itemVariants = {
   hidden: { opacity: 0, y: 32 },
   visible: { opacity: 1, y: 0, transition: { duration: 0.7 } }
 };
-
 function CartPage() {
   const navigate = useNavigate();
   const { cart, addToCart, removeFromCart, clearCart } = useCart();
@@ -65,7 +68,7 @@ function CartPage() {
   const [isPhoneValid, setIsPhoneValid] = useState(false);
 
   // Payment
-  const [paymentMethod, setPaymentMethod] = useState("COD");
+  const [paymentMethod, setPaymentMethod] = useState("UPI");
 
   // Price Summary
   const [priceSummary, setPriceSummary] = useState({
@@ -85,10 +88,12 @@ function CartPage() {
         const storedUser = localStorage.getItem("googleUser");
         const storedAccount = localStorage.getItem("accountDetails");
 
-        if (!user && !storedUser) {
-          navigate("/login");
-          return;
-        }
+         if (!user || Object.keys(user).length === 0) {
+    const storedUser = localStorage.getItem("googleUser");
+    if (!storedUser) {
+      navigate("/login", { replace: true });
+    }
+  }
         if (!user && storedUser) {
           setUser(JSON.parse(storedUser));
         }
@@ -106,8 +111,7 @@ function CartPage() {
             pincode: "",
           });
         }
-
-        if (user) {
+        if (storedUser && storedAccount) {
           setLoading(true);
           const [freshAccount, userOrders] = await Promise.all([
             fetchAccountDetails(),
@@ -136,7 +140,17 @@ function CartPage() {
       }
     }
     fetchUserData();
-  }, [user, navigate]);
+  }, [user]);
+
+  useEffect(() => {
+  if (!user || Object.keys(user).length === 0) {
+    const storedUser = localStorage.getItem("googleUser");
+    if (!storedUser) {
+      navigate("/login", { replace: true });
+    }
+  }
+}, [user]);
+
 
   // Debounce pincode input for API call
   useEffect(() => {
@@ -150,11 +164,13 @@ function CartPage() {
 
   // Validate pincode with city/state match against API
   useEffect(() => {
+    setLoading(true);
     if (debouncedPincode.length === 6) {
       fetch(`https://api.postalpincode.in/pincode/${debouncedPincode}`)
         .then(res => res.json())
         .then(data => {
           if (data[0].Status === "Success") {
+            setLoading(false);
             const postOffices = data[0].PostOffice || [];
 
             const match = postOffices.some(po =>
@@ -165,16 +181,19 @@ function CartPage() {
             setPincodeInfo(postOffices);
             setIsPincodeValid(match);
           } else {
+            setLoading(false);
             setPincodeInfo(null);
             setIsPincodeValid(false);
           }
         })
         .catch(err => {
+          setLoading(false);
           console.error("API error:", err);
           setPincodeInfo(null);
           setIsPincodeValid(false);
         });
     } else {
+       setLoading(false);
       setIsPincodeValid(null);
       setPincodeInfo(null);
     }
@@ -246,46 +265,126 @@ function CartPage() {
     setCouponApplied(false);
     setDiscount(0);
   };
-
-  const handleSubmitOrder = async () => {
-    if (
-      cart.length === 0 ||
-      !address ||
-      !address.city ||
-      !address.pincode ||
-      !phone ||
-      !isPhoneValid ||
-      !isPincodeValid ||
-      !deliveryAllowed
-    ) {
-      alert(
-        "⚠ Please add products to your cart and provide a valid shipping address with phone number."
-      );
+const handleSubmitOrder = async () => {
+  if (
+    cart.length === 0 ||
+    !address ||
+    !address.city ||
+    !address.pincode ||
+    !phone ||
+    !isPhoneValid ||
+    !isPincodeValid ||
+    !deliveryAllowed
+  ) {
+    alert(
+      "⚠ Please add products to your cart and provide a valid shipping address with phone number."
+    );
+    return;
+  }
+  setLoading(true);
+  try {
+    const orderPayload = {
+      products: cart.map(item => `${item.name} (x${item.qty})`),
+      productImg: cart[0]?.image || "",
+      coupon: couponApplied ? coupon : "",
+      offer: "",
+      totalPrice: priceSummary.total,
+      paymentMode: "UPI",
+      address,
+      phone
+    };
+    const totalPrice = priceSummary.total;
+    const payload = {orderPayload:orderPayload, totalPrice:totalPrice,phone: phone}
+    // Initiate payment session with backend
+    const res = await submitOrder(orderPayload);
+    console.log("Payment initiation response:", res);
+    if (res.success) {
+      // Redirect to PhonePe payment page
+      handlePhonePePayment(res.order);
+      return; // User will be redirected by PhonePe after payment
+    } else {
+      alert("Failed to launch PhonePe payment. Please try again.");
+      setLoading(false);
       return;
     }
-    setLoading(true);
-    try {
-      const orderPayload = {
-        products: cart.map(item => `${item.name} (x${item.qty})`),
-        coupon: couponApplied ? coupon : "",
-        offer: "",
-        totalPrice: priceSummary.total,
-        paymentMode: paymentMethod === "COD" ? "Cash" : paymentMethod,
-      };
-      await submitOrder(orderPayload);
-      alert("🎉 Your product has been ordered successfully!");
+  } catch (error) {
+    console.error("❌ Error submitting order:", error);
+    setLoading(false);
+    setErrorPopup({ show: true, message: "We are facing technical issues!" });
+  }
+};
+
+
+// cart.js or your payment component
+const handlePhonePePayment = async (order) => {
+  try {
+    // 1️⃣ Call backend to generate PhonePe token
+    const res = await getToken(order);
+
+
+    if (!res?.redirectUrl) {
       setLoading(false);
-      clearCart();
-      setCoupon("");
-      setCouponApplied(false);
-      setDiscount(0);
-      setAddress(null);
-    } catch (error) {
-      console.error("❌ Error submitting order:", error);
-      setLoading(false);
-      setErrorPopup({ show: true, message: "We are facing technical issues!" });
+      alert("Failed to generate payment token. Try again.");
+      return;
     }
-  };
+
+    // 2️⃣ Open PhonePe IFRAME checkout
+    window.PhonePeCheckout.transact({
+      tokenUrl: res.redirectUrl, // <-- Points to backend-generated token
+      type: "IFRAME",
+      callback: async function(response) {
+        console.log("Payment callback:", response);
+
+        if (response === "CONCLUDED" || response.status === "SUCCESS") {
+          // 3️⃣ Update order payment status in backend
+          const payload = {
+            merchantOrderId: order.merchantOrderId,
+            paymentStatus: res.data.state,
+            transactionId: "",
+            token: res?.token
+          };
+
+          const updateRes = await updateOrderStatus(payload);
+          if (updateRes.success) {
+            setLoading(false);
+            clearCart();
+            const queryParams = { orderId: order._id};
+              if(updateRes.getPhonepeStatus?.state === "COMPLETED"){
+                navigate({
+                  pathname: "/order-confirmed",
+                  search: `?${createSearchParams(queryParams)}`
+                });
+              }else if(updateRes.getPhonepeStatus?.state === "FAILED"){
+                navigate({
+                  pathname: "/order-failed",
+                  search: `?${createSearchParams(queryParams)}`
+                });
+              }else{
+                navigate({
+                  pathname: "/order-pending",
+                  search: `?${createSearchParams(queryParams)}`
+                });
+              }
+            // Optionally redirect user
+          } else {
+            setLoading(false);
+            alert("Payment Failed, If your Money is debited please, Contact support.");
+          }
+        } else {
+          setLoading(false);
+          alert("Payment failed or cancelled.");
+        }
+      }
+    });
+
+  } catch (err) {
+    console.error("Error initiating PhonePe payment:", err);
+    setLoading(false)
+    alert("Unable to initiate payment. Try again.");
+  }
+};
+
+
 
   // Save address and phone number
   const handleAddressSave = async (e) => {
@@ -383,7 +482,7 @@ function CartPage() {
                 {cart.map((item) => (
                   <div className="product-cart-card" key={item._id}>
                     <img
-                      src={require(`../../images/product-2.webp`)}
+                      src={item.image}
                       alt={item.name}
                       className="product-cart-img"
                     />
@@ -577,11 +676,11 @@ function CartPage() {
                   <input
                     type="radio"
                     name="payment"
-                    value="COD"
-                    checked={paymentMethod === "COD"}
-                    onChange={() => setPaymentMethod("COD")}
+                    value="UPI"
+                    checked={paymentMethod === "UPI"}
+                    onChange={() => setPaymentMethod("UPI")}
                   />
-                  Cash on Delivery (COD)
+                  Mobile Banking / UPI 
                 </label>
               </div>
 
@@ -648,7 +747,7 @@ function CartPage() {
               >
                 Buy Now
               </button>
-              {isPincodeValid === false && <div style={{ color: "red", marginTop: 4 }}>❌ Please Update your Address</div>}
+              {(!canCheckout) && <div style={{ color: "red", marginTop: 4, textAlign: "center" }}>❌ Please Add Your Address or Phone Number To Order.</div>}
             </>
           )}
         </section>

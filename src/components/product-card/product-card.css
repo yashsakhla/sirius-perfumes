@@ -183,6 +183,28 @@
 .arrow-icon{
     rotate: 45deg;
 }
+
+.product-desc {
+  font-size: 0.97rem;
+  color: #7a6e57;
+  margin: 6px 0 4px 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 2; /* Show only 2 lines */
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  cursor: pointer;
+  transition: background 0.15s;
+  background: none;
+}
+
+.product-desc.expanded {
+  -webkit-line-clamp: unset;
+  overflow: visible;
+  display: block;
+  background: #f4eedc; /* Optional */
+}
+
 @media (max-width: 800px) {
 
     .product-card {
@@ -208,6 +230,10 @@
     align-items: center;
     width: 100%;
   }
+
+  .product-desc{
+  padding-bottom: 10px;
+}
 }
 
 .price-row {
@@ -228,3 +254,6 @@
   font-size: 1.12rem;
   font-weight: bold;
 }
+
+
+

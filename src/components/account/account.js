@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { useUser } from "../../services/userContext";
 import { useNavigate } from "react-router-dom";
+import { FaWindowClose } from "react-icons/fa";
+import { FaStopCircle } from "react-icons/fa";
 import {
   fetchAccountDetails,
   updateAccountDetails,
@@ -73,43 +75,48 @@ export default function Account() {
   }, [addressInput.pincode]);
 
   // Pincode validation effect including city/state match
-useEffect(() => {
-  // Only run pincode validation if all required address fields are present
-  if (
-    !addressInput.city ||
-    !addressInput.state ||
-    !addressInput.pincode ||
-    addressInput.pincode.length !== 6
-  ) {
-    setPincodeInfo(null);
-    setIsPincodeValid(null);
-    return;
-  }
+  useEffect(() => {
+    // Only run pincode validation if all required address fields are present
+    if (
+      !addressInput.city ||
+      !addressInput.state ||
+      !addressInput.pincode ||
+      addressInput.pincode.length !== 6
+    ) {
+      setPincodeInfo(null);
+      setIsPincodeValid(null);
+      return;
+    }
 
-  fetch(`https://api.postalpincode.in/pincode/${addressInput.pincode}`)
-    .then((res) => res.json())
-    .then((data) => {
-      if (data.Status === "Success") {
-        const postOffices = data.PostOffice || [];
-        const match = postOffices.some(
-          (po) =>
-            po.District.toLowerCase() === addressInput.city.toLowerCase() &&
-            po.State.toLowerCase() === addressInput.state.toLowerCase()
-        );
-        setPincodeInfo(postOffices);
-        setIsPincodeValid(match);
-      } else {
+    fetch(`https://api.postalpincode.in/pincode/${addressInput.pincode}`)
+      .then((res) => res.json())
+      .then((data) => {
+        if (
+          Array.isArray(data) &&
+          data.length > 0 &&
+          data[0].Status === "Success"
+        ) {
+          const postOffices = data[0].PostOffice || [];
+          const match = postOffices.some(
+            (po) =>
+              po.District.toLowerCase() === addressInput.city.toLowerCase() &&
+              po.State.toLowerCase() === addressInput.state.toLowerCase()
+          );
+
+          setPincodeInfo(postOffices);
+          setIsPincodeValid(match);
+        } else {
+          setPincodeInfo(null);
+          setIsPincodeValid(false);
+        }
+      })
+
+      .catch((err) => {
+        console.error("API Error:", err);
         setPincodeInfo(null);
         setIsPincodeValid(false);
-      }
-    })
-    .catch((err) => {
-      console.error("API Error:", err);
-      setPincodeInfo(null);
-      setIsPincodeValid(false);
-    });
-}, [debouncedPincode, addressInput.city, addressInput.state]);
-
+      });
+  }, [debouncedPincode, addressInput.city, addressInput.state]);
 
   // Fetch account and orders on mount and if user changes
   useEffect(() => {
@@ -130,13 +137,15 @@ useEffect(() => {
       setAccount(parsedAccount);
       setNameInput(parsedAccount.name || "");
       setPhoneInput(parsedAccount.phone || "");
-      setAddressInput(parsedAccount.address || {
-        line1: "",
-        line2: "",
-        city: "",
-        state: "",
-        pincode: "",
-      });
+      setAddressInput(
+        parsedAccount.address || {
+          line1: "",
+          line2: "",
+          city: "",
+          state: "",
+          pincode: "",
+        }
+      );
     }
 
     if (user) {
@@ -146,13 +155,15 @@ useEffect(() => {
           setAccount(accountData);
           setNameInput(accountData.name || "");
           setPhoneInput(accountData.phone || "");
-          setAddressInput(accountData.address || {
-            line1: "",
-            line2: "",
-            city: "",
-            state: "",
-            pincode: "",
-          });
+          setAddressInput(
+            accountData.address || {
+              line1: "",
+              line2: "",
+              city: "",
+              state: "",
+              pincode: "",
+            }
+          );
           setOrders(ordersData);
 
           localStorage.setItem("accountDetails", JSON.stringify(accountData));
@@ -173,8 +184,14 @@ useEffect(() => {
       const updated = await updateAccountDetails({ name: nameInput });
       setAccount((prev) => ({ ...prev, name: updated.name }));
       setUser((prev) => ({ ...prev, name: updated.name }));
-      localStorage.setItem("googleUser", JSON.stringify({ ...user, name: updated.name }));
-      localStorage.setItem("accountDetails", JSON.stringify({ ...user, name: updated.name }));
+      localStorage.setItem(
+        "googleUser",
+        JSON.stringify({ ...user, name: updated.name })
+      );
+      localStorage.setItem(
+        "accountDetails",
+        JSON.stringify({ ...user, name: updated.name })
+      );
       setEditName(false);
     } catch (err) {
       alert("Failed to update name");
@@ -191,8 +208,14 @@ useEffect(() => {
       const updated = await updateAccountDetails({ phone: phoneInput });
       setAccount((prev) => ({ ...prev, phone: updated.phone }));
       setUser((prev) => ({ ...prev, phone: updated.phone }));
-      localStorage.setItem("googleUser", JSON.stringify({ ...user, phone: updated.phone }));
-      localStorage.setItem("accountDetails", JSON.stringify({ ...user, phone: updated.phone }));
+      localStorage.setItem(
+        "googleUser",
+        JSON.stringify({ ...user, phone: updated.phone })
+      );
+      localStorage.setItem(
+        "accountDetails",
+        JSON.stringify({ ...user, phone: updated.phone })
+      );
       setEditPhone(false);
     } catch (err) {
       alert("Failed to update phone number");
@@ -212,7 +235,9 @@ useEffect(() => {
     }
 
     if (isPincodeValid !== true) {
-      alert("Pincode, City, and State do not match or invalid. Please correct before saving.");
+      alert(
+        "Pincode, City, and State do not match or invalid. Please correct before saving."
+      );
       return;
     }
 
@@ -221,8 +246,14 @@ useEffect(() => {
       const updated = await updateAccountDetails({ address: addressInput });
       setAccount((prev) => ({ ...prev, address: updated.address }));
       setUser((prev) => ({ ...prev, address: updated.address }));
-      localStorage.setItem("googleUser", JSON.stringify({ ...user, address: updated.address }));
-      localStorage.setItem("accountDetails", JSON.stringify({ ...user, address: updated.address }));
+      localStorage.setItem(
+        "googleUser",
+        JSON.stringify({ ...user, address: updated.address })
+      );
+      localStorage.setItem(
+        "accountDetails",
+        JSON.stringify({ ...user, address: updated.address })
+      );
       setEditAddress(false);
     } catch (err) {
       alert("Failed to update address");
@@ -249,7 +280,8 @@ useEffect(() => {
     return null;
   }
 
-  const isPremiumUser = account?.premiumUser === true || user?.premiumUser === true;
+  const isPremiumUser =
+    account?.premiumUser === true || user?.premiumUser === true;
 
   return (
     <div className={`account-page${isPremiumUser ? " premium" : ""}`}>
@@ -282,7 +314,8 @@ useEffect(() => {
             🌟
           </span>
           <span>
-            You are a <span className="premium-text">Premium Member</span>! Enjoy exclusive access, golden offers, and luxury perks.
+            You are a <span className="premium-text">Premium Member</span>!
+            Enjoy exclusive access, golden offers, and luxury perks.
           </span>
         </div>
       )}
@@ -301,20 +334,23 @@ useEffect(() => {
             <span className="info-label">Name:</span>
             {editName ? (
               <>
-              <div className="info-input-col">
-                <input
-                  className="edit-input"
-                  value={nameInput}
-                  onChange={(e) => setNameInput(e.target.value)}
-                />
-                <div className="row">
-                  <button className="save-btn" onClick={handleNameSave}>
-                  Save
-                </button>
-                <button className="cancel-btn" onClick={() => setEditName(false)}>
-                  Cancel
-                </button>
-                </div>
+                <div className="info-input-col">
+                  <input
+                    className="edit-input"
+                    value={nameInput}
+                    onChange={(e) => setNameInput(e.target.value)}
+                  />
+                  <div className="row">
+                    <button className="save-btn" onClick={handleNameSave}>
+                      Save
+                    </button>
+                    <button
+                      className="cancel-btn"
+                      onClick={() => setEditName(false)}
+                    >
+                      Cancel
+                    </button>
+                  </div>
                 </div>
               </>
             ) : (
@@ -333,26 +369,30 @@ useEffect(() => {
             {editPhone ? (
               <>
                 <div className="info-input-col">
-                   <input
-                  className="edit-input"
-                  value={phoneInput}
-                  onChange={(e) => setPhoneInput(e.target.value)}
-                  placeholder="Enter phone number"
-                />
-                <div className="row">
-                  <button className="save-btn" onClick={handlePhoneSave}>
-                  Save
-                </button>
-                <button className="cancel-btn" onClick={() => setEditPhone(false)}>
-                  Cancel
-                </button>
+                  <input
+                    className="edit-input"
+                    value={phoneInput}
+                    onChange={(e) => setPhoneInput(e.target.value)}
+                    placeholder="Enter phone number"
+                  />
+                  <div className="row">
+                    <button className="save-btn" onClick={handlePhoneSave}>
+                      Save
+                    </button>
+                    <button
+                      className="cancel-btn"
+                      onClick={() => setEditPhone(false)}
+                    >
+                      Cancel
+                    </button>
+                  </div>
                 </div>
-                </div>
-
               </>
             ) : (
               <>
-                <span className="info-value info-strong">{account.phone || "Not provided"}</span>
+                <span className="info-value info-strong">
+                  {account.phone || "Not provided"}
+                </span>
                 <button className="edit-btn" onClick={() => setEditPhone(true)}>
                   <FaEdit />
                 </button>
@@ -375,27 +415,35 @@ useEffect(() => {
                   className="edit-input"
                   placeholder="Line 1"
                   value={addressInput.line1}
-                  onChange={(e) => setAddressInput({ ...addressInput, line1: e.target.value })}
+                  onChange={(e) =>
+                    setAddressInput({ ...addressInput, line1: e.target.value })
+                  }
                   required
                 />
                 <input
                   className="edit-input"
                   placeholder="Line 2"
                   value={addressInput.line2}
-                  onChange={(e) => setAddressInput({ ...addressInput, line2: e.target.value })}
+                  onChange={(e) =>
+                    setAddressInput({ ...addressInput, line2: e.target.value })
+                  }
                 />
                 <input
                   className="edit-input"
                   placeholder="City"
                   value={addressInput.city}
-                  onChange={(e) => setAddressInput({ ...addressInput, city: e.target.value })}
+                  onChange={(e) =>
+                    setAddressInput({ ...addressInput, city: e.target.value })
+                  }
                   required
                 />
                 <input
                   className="edit-input"
                   placeholder="State"
                   value={addressInput.state}
-                  onChange={(e) => setAddressInput({ ...addressInput, state: e.target.value })}
+                  onChange={(e) =>
+                    setAddressInput({ ...addressInput, state: e.target.value })
+                  }
                   required
                 />
                 <div>
@@ -403,22 +451,35 @@ useEffect(() => {
                     className="edit-input"
                     placeholder="Pincode"
                     value={addressInput.pincode}
-                    onChange={(e) => setAddressInput({ ...addressInput, pincode: e.target.value })}
+                    onChange={(e) =>
+                      setAddressInput({
+                        ...addressInput,
+                        pincode: e.target.value,
+                      })
+                    }
                     required
                   />
 
                   {/* Pincode validation messages */}
                   {isPincodeValid === true && (
-                    <div style={{ color: "green", marginTop: 4 }}>✅ We will deliver here</div>
-                  )}
-                  {isPincodeValid === false && pincodeInfo && pincodeInfo.length > 0 && (
-                    <div style={{ color: "orange", marginTop: 4 }}>
-                      ⚠️ City or State doesn&apos;t match the pincode. Please update.
+                    <div style={{ color: "green", marginTop: 4 }}>
+                      ✅ We will deliver here
                     </div>
                   )}
-                  {isPincodeValid === false && (!pincodeInfo || pincodeInfo.length === 0) && (
-                    <div style={{ color: "red", marginTop: 4 }}>❌ Invalid Pincode</div>
-                  )}
+                  {isPincodeValid === false &&
+                    pincodeInfo &&
+                    pincodeInfo.length > 0 && (
+                      <div style={{ color: "orange", marginTop: 4 }}>
+                        ⚠️ City or State doesn&apos;t match the pincode. Please
+                        update.
+                      </div>
+                    )}
+                  {isPincodeValid === false &&
+                    (!pincodeInfo || pincodeInfo.length === 0) && (
+                      <div style={{ color: "red", marginTop: 4 }}>
+                        ❌ Invalid Pincode
+                      </div>
+                    )}
                 </div>
 
                 <button
@@ -440,10 +501,16 @@ useEffect(() => {
               <>
                 <span className="info-value">
                   {account.address?.line1 || ""}
-                  {account.address?.line2 ? `, ${account.address.line2}` : ""}, {account.address?.city || ""},{" "}
-                  {account.address?.state || ""} - {account.address?.pincode || ""}
+                  {account.address?.line2
+                    ? `, ${account.address.line2}`
+                    : ""}, {account.address?.city || ""},{" "}
+                  {account.address?.state || ""} -{" "}
+                  {account.address?.pincode || ""}
                 </span>
-                <button className="edit-btn" onClick={() => setEditAddress(true)}>
+                <button
+                  className="edit-btn"
+                  onClick={() => setEditAddress(true)}
+                >
                   <FaEdit />
                 </button>
               </>
@@ -481,12 +548,22 @@ useEffect(() => {
               {account.orders.map((order, idx) => (
                 <div className="order-history-card" key={order._id || idx}>
                   <div className="order-row">
-                    <span className="order-id">Order #{order._id || order.id}</span>
-                    <span className="order-date">{order.date ? new Date(order.date).toLocaleDateString() : ""}</span>
+                    <span className="order-id">
+                      Order #{order._id || order.id}
+                    </span>
+                    <span className="order-date">
+                      {order.date
+                        ? new Date(order.date).toLocaleDateString()
+                        : ""}
+                    </span>
                   </div>
                   <div className="order-row">
-                    <span className="order-items">{order.items?.length || 0} item(s)</span>
-                    <span className="order-total">${order.total || 0}</span>
+                    <span className="order-items">
+                      {order.items?.length || 0} item(s)
+                    </span>
+                    <span className="order-total">
+                      ₹ {order.totalPrice || 0}
+                    </span>
                   </div>
                 </div>
               ))}
@@ -505,45 +582,170 @@ useEffect(() => {
               </div>
 
               {orders.map((order, idx) => {
-                const statusSteps = ["Ordered", "Processing", "Dispatched", "Delivered"];
-                const currentStep = statusSteps.indexOf(order.status);
+                const statusSteps = [
+                  "Ordered",
+                  "Processing",
+                  "Dispatched",
+                  "Delivered",
+                ];
+
+                const shippingSteps = [
+                  {
+                    label: "Ordered",
+                    date: order.date,
+                    done: [
+                      "Ordered",
+                      "Processing",
+                      "Dispatched",
+                      "Delivered",
+                    ].includes(order.Deliverystatus),
+                  },
+                  {
+                    label: "Processing",
+                    date: order.processingDate,
+                    done: ["Processing", "Dispatched", "Delivered"].includes(
+                      order.Deliverystatus
+                    ),
+                  },
+                  {
+                    label: "Dispatched",
+                    date: order.dispatchDate,
+                    done: ["Dispatched", "Delivered"].includes(
+                      order.Deliverystatus
+                    ),
+                  },
+                  {
+                    label: "Delivered",
+                    date: order.deliveryDate,
+                    done: order.Deliverystatus === "Delivered",
+                  },
+                ];
+                const currentStep = statusSteps.indexOf(order.Deliverystatus);
                 const deliveryDate = new Date(order.date);
                 deliveryDate.setDate(deliveryDate.getDate() + 5);
 
                 return (
-                  <div className="order-card" key={order._id || idx}>
-                    <div className="order-header">
-                      <span>Order #{order._id}</span>
-                      <span>{new Date(order.date).toLocaleDateString()}</span>
-                    </div>
-                    <div className="order-products">{order.products?.join(", ")}</div>
-                    <div className="order-status-progress">
-                      {statusSteps.map((step, i) => (
-                        <div key={i} className={`order-step ${i <= currentStep ? "active" : ""}`}>
-                          <div className="step-circle" />
-                          <span className="step-label">{step}</span>
+                  <div className="order-card">
+                    <div className="order-card__row order-card__row--top">
+                      <img
+                        className="order-card__product-image"
+                        src={
+                          order.productImg || "https://via.placeholder.com/80"
+                        }
+                        alt={order.productName}
+                      />
+                      <div className="order-card__details">
+                        <span
+                          className={`order-card__payment-status order-card__payment-status--${order.paymentStatus}`}
+                        >
+                          {order.paymentStatus == "COMPLETED" ? "ORDER CONFIRMED" : order.paymentStatus == "FAILED" ? "PAYMENT FAILED" : "INCOMPLETE PAYMENT"}
+                        </span>
+                        <div className="order-card__product-title">
+                          {order.products.join(", ")}
                         </div>
-                      ))}
-                      <div className="progress-bar-container">
-                        <div
-                          className="progress-bar"
-                          style={{
-                            width: `${(currentStep / (statusSteps.length - 1)) * 100}%`,
-                          }}
-                        />
                       </div>
                     </div>
-                    <div className="order-message">
-                      {order.status === "Delivered" ? (
-                        <span className="delivered-msg">
-                          ✅ Delivered on {new Date(order.updatedAt).toLocaleDateString()}
-                        </span>
-                      ) : (
-                        <em className="pending-msg">
-                          📦 Order will be delivered by {deliveryDate.toLocaleDateString()}
-                        </em>
-                      )}
+                    <div className="order-card__row order-card__row--info">
+                      <div className="order-card__info-col">
+                        <span>Order ID:</span>
+                        <strong>{order._id}</strong>
+                      </div>
+                      <div className="order-card__info-col">
+                        <span>Placed:</span>
+                        <strong>
+                          {new Date(order.date).toLocaleDateString()},{" "}
+                          {new Date(order.date).toLocaleTimeString()}
+                        </strong>
+                      </div>
+                      <div className="order-card__info-col">
+                        <span>Total:</span>
+                        <strong>₹ {order.totalPrice}</strong>
+                      </div>
+                      <div className="order-card__info-col">
+                        <span>Offer:</span>
+                        <strong>{order.offer || "None"}</strong>
+                      </div>
                     </div>
+                    {order.paymentStatus === "COMPLETED" ? (
+                      <div className="order-stepper-vertical">
+                        {shippingSteps.map((step, idx) => (
+                          <div key={idx} className="stepper-row">
+                            <div className="stepper-col">
+                              <div className="stepper-col-left">
+                                <input
+                                  type="checkbox"
+                                  className="step-checkbox"
+                                  disabled
+                                  checked={step.done}
+                                />
+                                <span
+                                  className={`step-status${
+                                    step.done ? " active" : ""
+                                  }`}
+                                >
+                                  {step.label}
+                                </span>
+                              </div>
+                              <span className="step-date">
+                                {step.done && step.date
+                                  ? `${new Date(
+                                      step.date
+                                    ).toLocaleDateString()}, ${new Date(
+                                      step.date
+                                    ).toLocaleTimeString()}`
+                                  : "--"}
+                              </span>
+                            </div>
+                            {idx !== shippingSteps.length - 1 && (
+                              <div className="stepper-line"></div>
+                            )}
+                          </div>
+                        ))}
+                        <button className="stepper-btn">
+                          <a
+                            href="https://wa.me/+919370917752"
+                            target="_blank"
+                            className="link"
+                            rel="noopener noreferrer"
+                          >
+                            Contact Support
+                          </a>
+                        </button>
+                      </div>
+                    ) : (
+                      <div className="payment-failed-box">
+                       <div className="payment-status-row">
+                        <div className="emoji">
+                           {order.paymentStatus === "FAILED"
+                            ? (<FaWindowClose size={30} color="#f01008ff" />)
+                            : (<FaStopCircle size={30} color="#f4d136ff" />) }
+                        </div>
+                                                <p className="payment-status-text">
+                          {order.paymentStatus === "FAILED"
+                            ?  "Your payment has failed."
+                            : "Your payment is pending confirmation."}
+                        </p>
+                       </div>
+
+                        <p className="payment-support-text">
+                          If money is debited, please contact support with your
+                          order ID. Your order will be confirmed after
+                          verification.
+                          <br />
+                          <strong>Thank you for your patience.</strong>
+                        </p>
+                        <button className="stepper-btn">
+                          <a
+                            href="https://wa.me/+919370917752"
+                            target="_blank"
+                            className="link"
+                            rel="noopener noreferrer"
+                          >
+                            Contact Support
+                          </a>
+                        </button>
+                      </div>
+                    )}
                   </div>
                 );
               })}
@@ -558,7 +760,10 @@ useEffect(() => {
       </div>
 
       {showErrorPopup && (
-        <ErrorPopup message="We are currently facing difficulty at our end, sorry for the inconvenience." onClose={() => setShowErrorPopup(false)} />
+        <ErrorPopup
+          message="We are currently facing difficulty at our end, sorry for the inconvenience."
+          onClose={() => setShowErrorPopup(false)}
+        />
       )}
     </div>
   );
