@@ -25,16 +25,50 @@ function ProductCard({
   index = 0,
 }) {
   const [showFullDesc, setShowFullDesc] = useState(false);
+  const isSoldOut = product.active === false; // Adjust this logic based on your API flag
 
   return (
     <motion.div
-      className={`product-card ${className}`}
+      className={`product-card ${className} ${isSoldOut ? "sold-out" : ""}`}
       variants={cardVariants}
       initial="hidden"
       animate="visible"
       custom={index}
     >
-      <img src={product.image} alt={product.name} />
+      {/* Image with overlays */}
+      <div className="image-wrapper">
+        <img
+          src={product.image}
+          alt={product.name}
+          className={`product-image ${isSoldOut ? "dimmed" : ""}`}
+        />
+
+        {/* Top-left "SOLD OUT" */}
+        {isSoldOut && (
+          <motion.div
+            className="sold-out-top"
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4 }}
+          >
+            SOLD OUT
+          </motion.div>
+        )}
+
+        {/* Bottom overlay message */}
+        {isSoldOut && (
+          <motion.div
+            className="sold-out-bottom"
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4, delay: 0.2 }}
+          >
+            New stock arriving soon. Stay tuned!
+          </motion.div>
+        )}
+      </div>
+
+      {/* Product Info */}
       <div className="product-detail-row">
         <div className="left">
           <h3>{product.name}</h3>
@@ -58,9 +92,15 @@ function ProductCard({
             )}
           </div>
         </div>
+
+        {/* Cart Actions */}
         <div className="cart-actions">
           {qty === 0 ? (
-            <button className="add-button" onClick={() => addToCart(product)}>
+            <button
+              className="add-button"
+              onClick={() => addToCart(product)}
+              disabled={isSoldOut}
+            >
               ADD <FaArrowUp size={15} className="arrow-icon" />
             </button>
           ) : (
@@ -68,6 +108,7 @@ function ProductCard({
               <button
                 className="remove-button"
                 onClick={() => removeFromCart(product)}
+                disabled={isSoldOut}
               >
                 -
               </button>
@@ -75,6 +116,7 @@ function ProductCard({
               <button
                 className="add-more-button"
                 onClick={() => addToCart(product)}
+                disabled={isSoldOut}
               >
                 +
               </button>
@@ -82,6 +124,8 @@ function ProductCard({
           )}
         </div>
       </div>
+
+      {/* Description */}
       <div
         className={`product-desc${showFullDesc ? " expanded" : ""}`}
         onClick={() => setShowFullDesc(!showFullDesc)}

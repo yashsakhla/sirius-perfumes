@@ -189,7 +189,7 @@
   color: #7a6e57;
   margin: 6px 0 4px 0;
   display: -webkit-box;
-  -webkit-line-clamp: 2; /* Show only 2 lines */
+  -webkit-line-clamp: 4; /* Show only 2 lines */
   -webkit-box-orient: vertical;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -231,9 +231,6 @@
     width: 100%;
   }
 
-  .product-desc{
-  padding-bottom: 10px;
-}
 }
 
 .price-row {
@@ -257,3 +254,81 @@
 
 
 
+/* Sold Out overlay */
+.product-card.sold-out {
+  position: relative;
+  opacity: 0.6;
+}
+
+.image-wrapper {
+  position: relative;
+}
+
+.sold-out-overlay {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: rgba(0, 0, 0, 0.75);
+  color: #fff;
+  font-size: 1.2rem;
+  font-weight: 600;
+  padding: 8px 16px;
+  border-radius: 6px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+.blurred {
+  filter: grayscale(80%) blur(1px);
+}
+
+.add-button:disabled,
+.remove-button:disabled,
+.add-more-button:disabled {
+  background: #aaa;
+  cursor: not-allowed;
+}
+.dimmed {
+  filter: brightness(60%) grayscale(30%);
+}
+
+.sold-out-top {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  background: rgba(0, 0, 0, 0.7);
+  color: #fff;
+  font-weight: 600;
+  font-size: 13px;
+  padding: 6px 10px;
+  border-radius: 6px;
+  text-transform: uppercase;
+}
+
+.sold-out-bottom {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: rgba(0, 0, 0, 0.65);
+  color: #fff;
+  text-align: center;
+  font-size: 13px;
+  font-weight: 500;
+  padding: 8px 0;
+}
+
+/* Disabled button styling */
+.add-button:disabled,
+.remove-button:disabled,
+.add-more-button:disabled {
+  background-color: #aaa;
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+/* When sold out, make the entire card non-clickable visually */
+.sold-out {
+  pointer-events: none;
+}
