@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { FaArrowUp } from "react-icons/fa";
+import { useNavigate } from "react-router-dom";
 import "./product-card.css";
 
 const cardVariants = {
@@ -24,8 +25,15 @@ function ProductCard({
   className,
   index = 0,
 }) {
+  const navigate = useNavigate();
   const [showFullDesc, setShowFullDesc] = useState(false);
   const isSoldOut = product.active === false; // Adjust this logic based on your API flag
+
+  const handleCardClick = () => {
+    navigate(`/product/${product._id}`);
+    console.log("Click for details");
+    
+  };
 
   return (
     <motion.div
@@ -34,6 +42,8 @@ function ProductCard({
       initial="hidden"
       animate="visible"
       custom={index}
+      onClick={handleCardClick}
+      style={{ cursor: "pointer" }}
     >
       {/* Image with overlays */}
       <div className="image-wrapper">
@@ -94,7 +104,7 @@ function ProductCard({
         </div>
 
         {/* Cart Actions */}
-        <div className="cart-actions">
+        <div className="cart-actions" onClick={(e) => e.stopPropagation()}>
           {qty === 0 ? (
             <button
               className="add-button"
@@ -128,7 +138,10 @@ function ProductCard({
       {/* Description */}
       <div
         className={`product-desc${showFullDesc ? " expanded" : ""}`}
-        onClick={() => setShowFullDesc(!showFullDesc)}
+        onClick={(e) => {
+          e.stopPropagation();
+          setShowFullDesc(!showFullDesc);
+        }}
         title={showFullDesc ? "Click to collapse" : "Click to expand"}
       >
         {product.description || "No description available."}

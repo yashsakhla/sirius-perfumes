@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState } from "react";
 import { useToaster } from "./toasterContext"; // adjust path as needed
 
+
 const CartContext = createContext();
 
 export function useCart() {
