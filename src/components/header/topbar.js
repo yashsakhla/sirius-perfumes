@@ -1,6 +1,8 @@
 import React from "react";
 import { FaTruck } from "react-icons/fa";
 
+
+
 const TopBar = () => {
     return (
         <div
@@ -33,7 +35,24 @@ const TopBar = () => {
                     <span>Delivery in 4–5 days</span>
                 </div>
 
-               
+
+                {/* Email  */}
+                <a
+                    href="https://mail.google.com/mail/?view=cm&fs=1&to=info@trinestsky.com"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "8px",
+                        textDecoration: "none",
+                        color: "#fff",
+                    }}
+                >
+                    {/* <FaEnvelope />
+                    info@sirius.com */}
+                </a>
+
 
                 {/* Phone */}
                 <div
