@@ -129,7 +129,7 @@ function Home() {
   return (
     <main>
       <Popup />
-      <Scrolltextbar />
+      {/* <Scrolltextbar /> */}
 
        <YouTubePopup
       open={youtubeOpen}
