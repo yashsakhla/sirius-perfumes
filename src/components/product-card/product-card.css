@@ -228,7 +228,7 @@
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    width: 100%;
+    width: 90%;
   }
 
 }
@@ -262,6 +262,34 @@
 
 .image-wrapper {
   position: relative;
+}
+
+.product-rating-badge {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  padding: 4px 8px;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.75);
+  color: #fff;
+  font-size: 0.75rem;
+  font-family: 'Outfit', sans-serif;
+}
+
+.product-rating-badge-icon {
+  color: #ffc107;
+  font-size: 0.8rem;
+}
+
+.product-rating-badge-value {
+  font-weight: 600;
+}
+
+.product-rating-badge-count {
+  opacity: 0.85;
 }
 
 .sold-out-overlay {

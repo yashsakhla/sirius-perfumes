@@ -22,6 +22,7 @@ import OrderConfirmed from './components/confirm-order/confirm-order';
 import OrderPending from './components/confirm-order/pending.order';
 import OrderFailed from './components/confirm-order/failed.order';
 import { UserProvider } from './services/userContext';
+import ProductDetail from "./components/product-detail/product-detail";
 
 function App() {
   return (
@@ -46,6 +47,7 @@ function App() {
                     <Route path="/order-confirmed" element={<OrderConfirmed />} />
                     <Route path="/order-pending" element={<OrderPending />} />
                     <Route path="/order-failed" element={<OrderFailed />} />
+                    <Route path="/product/:id" element={<ProductDetail />} />
                     <Route path="*" element={<Navigate to="/home" replace />} />
                   </Routes>
                   <Footer />

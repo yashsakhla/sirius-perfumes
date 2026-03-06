@@ -73,3 +73,13 @@ export const updateOrderStatus = async (payload) => {
   const res = await axiosInstance.post(`${url}/api/payment/update-order-status`, payload);
   return res.data;
 }
+
+export const getProductReviews = async (productId) => {
+  const res = await axiosInstance.get(`${url}/api/perfumes/product/${productId}/reviews`);
+  return res.data;
+};
+
+export const submitProductReview = async (productId, payload) => {
+  const res = await axiosInstance.post(`${url}/api/perfumes/product/${productId}/review`, payload);
+  return res.data;
+};

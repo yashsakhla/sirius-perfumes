@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { FaArrowUp } from "react-icons/fa";
+import { FaArrowUp, FaStar } from "react-icons/fa";
+import { useNavigate, useLocation } from "react-router-dom";
 import "./product-card.css";
 
 const cardVariants = {
@@ -26,6 +27,19 @@ function ProductCard({
 }) {
   const [showFullDesc, setShowFullDesc] = useState(false);
   const isSoldOut = product.active === false; // Adjust this logic based on your API flag
+  const navigate = useNavigate();
+  const location = useLocation();
+  const averageRating =
+    product?.averageRating ?? product?.avgRating ?? product?.rating ?? null;
+  const totalReviews =
+    product?.totalReviews ?? product?.reviewCount ?? product?.reviewsCount ?? null;
+
+  const handleOpenDetail = () => {
+    if (!product?._id) return;
+    navigate(`/product/${product._id}`, {
+      state: { product, from: location.pathname },
+    });
+  };
 
   return (
     <motion.div
@@ -36,12 +50,27 @@ function ProductCard({
       custom={index}
     >
       {/* Image with overlays */}
-      <div className="image-wrapper">
+      <div className="image-wrapper" onClick={handleOpenDetail}>
         <img
           src={product.image}
           alt={product.name}
           className={`product-image ${isSoldOut ? "dimmed" : ""}`}
         />
+
+        {/* Top-right rating badge */}
+        {typeof averageRating === "number" && averageRating > 0 && (
+          <div className="product-rating-badge">
+            <FaStar className="product-rating-badge-icon" />
+            <span className="product-rating-badge-value">
+              {averageRating.toFixed(1)}
+            </span>
+            {typeof totalReviews === "number" && totalReviews > 0 && (
+              <span className="product-rating-badge-count">
+                ({totalReviews})
+              </span>
+            )}
+          </div>
+        )}
 
         {/* Top-left "SOLD OUT" */}
         {isSoldOut && (
@@ -70,10 +99,10 @@ function ProductCard({
 
       {/* Product Info */}
       <div className="product-detail-row">
-        <div className="left">
+        <div className="left" onClick={handleOpenDetail}>
           <h3>{product.name}</h3>
           <p>{product.size} Bottle</p>
-          <div className="price-row">
+          {/* <div className="price-row">
             {product.basicPrice &&
             product.discountedPrice &&
             product.basicPrice !== product.discountedPrice ? (
@@ -90,6 +119,9 @@ function ProductCard({
                 ₹{Number(product.discountedPrice ?? product.price).toFixed(2)}
               </div>
             )}
+          </div> */}
+          <div className="discounted-price">
+            ₹{Number(product.discountedPrice ?? product.price).toFixed(2)}
           </div>
         </div>
 
