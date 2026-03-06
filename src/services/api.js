@@ -32,9 +32,14 @@ export const getAllProducts = async () => {
  return res.data;
 };
 
-export const getCategories = async () => {
-  const res = await axiosInstance.get(`${url}/api/categories`);
-  return res.data;
+export const getProductById = async (id) => {
+  try {
+    const response = await axiosInstance.get(`/api/perfumes/product/${id}`);
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching product:", error);
+    throw error;
+  }
 };
 
 export const verifyCoupon = async (code) => {
