@@ -10,6 +10,8 @@ import Loader from "../loader/loader";
 import ErrorPopup from "../error-popup/Error-popup";
 
 import "./login.css";
+import PromoBanners from "../promo-banners/promo-banners";
+import { loginAfterHero } from "../promo-banners/promo-data";
 
 const bannerVariants = {
   hidden: { opacity: 0, y: 60 },
@@ -78,6 +80,8 @@ export default function LoginPage() {
           </motion.p>
         </motion.div>
       </section>
+
+      <PromoBanners items={loginAfterHero} />
 
       <div className="login-box" style={{ maxWidth: 400, margin: "3rem auto", textAlign: "center" }}>
         <FaUser size={32} style={{ marginBottom: 16, color: "#333" }} />

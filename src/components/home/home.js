@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import {
   FaLeaf,
   FaFlask,
@@ -27,7 +27,12 @@ import Loader from "../loader/loader";
 import { Link } from "react-router-dom";
 
 import ShiningLoader from "../shiningLoader/ShiningLoader";
-
+import PromoBanners from "../promo-banners/promo-banners";
+import {
+  homeAfterFeatures,
+  homeBetweenGrids,
+  homeBeforeStats,
+} from "../promo-banners/promo-data";
 
 // 🎞️ Animation Variants
 const bannerContentVariants = {
@@ -109,6 +114,23 @@ function Home() {
   const centerCategory = categories[2];
   const rightCategories = [categories[3], categories[4]];
 
+  /** Single list for home: merge all groups, dedupe by _id */
+  const allHomeProducts = useMemo(() => {
+    const seen = new Set();
+    const list = [];
+    for (const group of perfumes) {
+      const products = group?.products;
+      if (!Array.isArray(products)) continue;
+      for (const p of products) {
+        const id = p?._id;
+        if (!id || seen.has(String(id))) continue;
+        seen.add(String(id));
+        list.push(p);
+      }
+    }
+    return list;
+  }, [perfumes]);
+
   useEffect(() => {
     setShowShineLoader(true);
     const fetchData = async () => {
@@ -187,7 +209,7 @@ function Home() {
             <div>
               <div className="feature-bar-label">SHIPPING</div>
               <div>
-                <span className="feature-bar-bold">Free Shipping Worldwide</span>
+                <span className="feature-bar-bold">Free shipping on orders above ₹499</span>
               </div>
             </div>
           </div>
@@ -215,14 +237,16 @@ function Home() {
         <div className="feature-bar-line" />
       </motion.div>
 
-      {/* 🧴 Perfume Product Categories (From API) */}
+      <PromoBanners items={homeAfterFeatures} />
+
+      {/* 🧴 All fragrances (single grid from API groups) */}
       <motion.section
         className="perfume-section"
         variants={sectionVariants}
         initial="hidden"
         whileInView="visible"
         viewport={{ once: true, amount: 0.2 }}
-        style={{ position: "relative" }} // needed for loader overlay positioning
+        style={{ position: "relative" }}
       >
         {showShineLoader && (
           <div className="shining-loader-overlay">
@@ -230,19 +254,19 @@ function Home() {
           </div>
         )}
 
-        {!showShineLoader  && perfumes.map((group, i) => (
+        <h2 className="home-fragrances-heading">Our fragrances</h2>
+
+        {!showShineLoader && allHomeProducts.length > 0 && (
           <motion.div
-            className="perfume-container"
-            key={i}
+            className="perfume-container home-perfume-all"
             variants={columnVariants}
             initial="hidden"
             whileInView="visible"
-            viewport={{ once: true, amount: 0.2 }}
-            custom={i}
+            viewport={{ once: true, amount: 0.15 }}
+            custom={0}
           >
-            <h2>{group.category}</h2>
             <div className="card-row">
-              {group.products.map((product, j) => {
+              {allHomeProducts.map((product, j) => {
                 const cartItem = cart.find((item) => item._id === product._id);
                 const qty = cartItem ? cartItem.qty : 0;
                 return (
@@ -259,8 +283,10 @@ function Home() {
               })}
             </div>
           </motion.div>
-        ))}
+        )}
       </motion.section>
+
+      <PromoBanners items={homeBetweenGrids} />
 
       {/* 🎨 Perfume Categories Grid */}
       <motion.section
@@ -347,6 +373,8 @@ function Home() {
           </div>
         </div>
       </motion.section>
+
+      <PromoBanners items={homeBeforeStats} />
 
       {/* Market Stats */}
       <motion.section

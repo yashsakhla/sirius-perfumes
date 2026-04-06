@@ -20,6 +20,12 @@ export const updateAccountDetails = async (payload) => {
   return res.data;
 };
 
+/** Public: active home / site notifications (no auth required). */
+export const fetchNotifications = async () => {
+  const res = await axios.get(`${url}/api/notifications`);
+  return res.data;
+};
+
 // 🛍️ Get products grouped by category (homepage)
 export const getGroupedProducts = async () => {
   const res = await axiosInstance.get(`${url}/api/perfumes/category-products`);
@@ -34,7 +40,9 @@ export const getAllProducts = async () => {
 
 export const getProductById = async (id) => {
   try {
-    const response = await axiosInstance.get(`/api/perfumes/product/${id}`);
+    const response = await axiosInstance.get(
+      `${url}/api/perfumes/product/${id}`
+    );
     return response.data;
   } catch (error) {
     console.error("Error fetching product:", error);
@@ -53,6 +61,7 @@ export const getCartPrice = async (products) => {
   return res.data; // e.g., { subtotal: 500, total: 490, discount: 10 }
 };
 
+/** Creates order; response.order is passed to getToken for UPI and COD (use amountPayableNow on payload). */
 export const submitOrder = async (orderData) => {
   const res = await axiosInstance.post("/api/orders", orderData);
   return res.data;
@@ -67,7 +76,7 @@ export const fetchUserOrders = async (id) => {
 export const createPayment = async (payload) => {
   const res = await axiosInstance.post(`${url}/api/payment/phonepe/create`, payload);
   return res.data;
-}
+};
 
 export const getToken = async (payload) => {
   const res = await axiosInstance.post(`${url}/api/payment/token`, payload);

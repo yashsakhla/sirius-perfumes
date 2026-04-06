@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useParams, useLocation, useNavigate, Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import {
@@ -9,12 +9,29 @@ import {
   FaArrowLeft,
   FaPaperPlane,
   FaCrown,
+  FaGift,
 } from "react-icons/fa";
 import { useCart } from "../../services/cartContext";
 import { useUser } from "../../services/userContext";
-import { getAllProducts, getProductReviews, submitProductReview } from "../../services/api";
+import {
+  getAllProducts,
+  getProductById,
+  getProductReviews,
+  submitProductReview,
+} from "../../services/api";
+import { isGiftProduct } from "../../utils/giftProduct";
+import GiftCustomizePanel from "../gift-customize/GiftCustomizePanel";
 import ShiningLoader from "../shiningLoader/ShiningLoader";
+import {
+  normalizeSizeEntries,
+  getSizeEntry,
+  getPriceForSize,
+  resolveSizeLabel,
+  extractProductFromApiResponse,
+} from "../../utils/productSizes";
 import "./product-detail.css";
+import PromoBanners from "../promo-banners/promo-banners";
+import { productBetweenDescReviews } from "../promo-banners/promo-data";
 
 const pageVariants = {
   hidden: { opacity: 0, y: 40 },
@@ -45,9 +62,15 @@ function ProductDetail() {
   const { user } = useUser();
 
   const [product, setProduct] = useState(location.state?.product || null);
-  const [loading, setLoading] = useState(!location.state?.product);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [selectedSize, setSelectedSize] = useState(location.state?.product?.size || "");
+  const [selectedSize, setSelectedSize] = useState(() => {
+    const p = location.state?.product;
+    return normalizeSizeEntries(p)[0]?.size ?? "";
+  });
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const carouselRef = useRef(null);
+  const pauseUntilRef = useRef(0);
 
   const [reviewsLoading, setReviewsLoading] = useState(false);
   const [reviewsError, setReviewsError] = useState(null);
@@ -57,31 +80,95 @@ function ProductDetail() {
   const [reviewText, setReviewText] = useState("");
   const [submittingReview, setSubmittingReview] = useState(false);
   const [currentReviewPage, setCurrentReviewPage] = useState(1);
+  const [giftCustomizeOpen, setGiftCustomizeOpen] = useState(
+    Boolean(location.state?.focusCustomize)
+  );
+  const [giftCatalog, setGiftCatalog] = useState([]);
 
   useEffect(() => {
-    if (product || !id) return;
+    if (!id) {
+      setLoading(false);
+      return;
+    }
+
+    let cancelled = false;
 
     const fetchProduct = async () => {
       try {
         setLoading(true);
-        const allProducts = await getAllProducts();
-        const found = allProducts.find((p) => p._id === id);
-        if (!found) {
-          setError("Product not found.");
-        } else {
-          setProduct(found);
-          setSelectedSize(found.size || "");
+        setError(null);
+
+        let full = null;
+        try {
+          const raw = await getProductById(id);
+          full = extractProductFromApiResponse(raw);
+        } catch {
+          /* fall through to list */
         }
+
+        if (!full) {
+          const allProducts = await getAllProducts();
+          const list = Array.isArray(allProducts) ? allProducts : [];
+          full = list.find((p) => p._id === id) || null;
+        }
+
+        if (cancelled) return;
+
+        if (!full) {
+          setError("Product not found.");
+          setProduct(null);
+          return;
+        }
+
+        setProduct((prev) => ({ ...(prev || {}), ...full }));
+        const keys = normalizeSizeEntries(full).map((e) => e.size);
+        setSelectedSize((prev) =>
+          prev && keys.includes(prev) ? prev : keys[0] || ""
+        );
       } catch (err) {
         console.error("Failed to load product", err);
-        setError("Unable to load product details. Please try again.");
+        if (!cancelled) setError("Unable to load product details. Please try again.");
       } finally {
-        setLoading(false);
+        if (!cancelled) setLoading(false);
       }
     };
 
     fetchProduct();
-  }, [id, product]);
+    return () => {
+      cancelled = true;
+    };
+  }, [id]);
+
+  // Auto-advance product images when multiple images exist.
+  useEffect(() => {
+    if (!product) return;
+
+    const urls =
+      Array.isArray(product.images) && product.images.length
+        ? product.images
+        : product.image
+        ? [product.image]
+        : [];
+
+    if (urls.length <= 1) {
+      setCurrentImageIndex(0);
+      return;
+    }
+
+    setCurrentImageIndex(0);
+    const intervalId = setInterval(() => {
+      const now = Date.now();
+      if (now < pauseUntilRef.current) return;
+
+      const nextIndex = (currentImageIndex + 1) % urls.length;
+      const el = carouselRef.current;
+      if (!el) return;
+      const slideWidth = el.clientWidth || 0;
+      el.scrollTo({ left: nextIndex * slideWidth, behavior: "smooth" });
+    }, 2500);
+
+    return () => clearInterval(intervalId);
+  }, [product?._id, currentImageIndex]);
 
   useEffect(() => {
     const loadReviews = async () => {
@@ -102,7 +189,37 @@ function ProductDetail() {
     loadReviews();
   }, [product]);
 
-  const cartItem = cart.find((item) => item._id === product?._id);
+  useEffect(() => {
+    if (!giftCustomizeOpen || !id) return;
+    let cancelled = false;
+    getAllProducts()
+      .then((data) => {
+        if (!cancelled) setGiftCatalog(Array.isArray(data) ? data : []);
+      })
+      .catch(() => {
+        if (!cancelled) setGiftCatalog([]);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [giftCustomizeOpen, id]);
+
+  const sizeKeysEarly = normalizeSizeEntries(product).map((e) => e.size);
+  const effectiveSizeEarly = (
+    selectedSize ||
+    sizeKeysEarly[0] ||
+    ""
+  ).trim();
+  const cartLine = product
+    ? { _id: product._id, size: effectiveSizeEarly }
+    : { _id: "", size: "" };
+  const cartItem = product
+    ? cart.find(
+        (item) =>
+          item._id === product._id &&
+          String(item.size ?? "").trim() === effectiveSizeEarly
+      )
+    : null;
   const qty = cartItem ? cartItem.qty : 0;
   const isSoldOut = product?.active === false;
   const isLoggedIn = Boolean(user);
@@ -116,15 +233,19 @@ function ProductDetail() {
   };
 
   const handleBuyNow = () => {
-    if (!product) return;
-    addToCart(product);
+    if (!product || isGiftProduct(product)) return;
+    const keys = normalizeSizeEntries(product).map((e) => e.size);
+    const sizeToUse = (selectedSize || keys[0] || "").trim();
+    addToCart(product, sizeToUse);
     navigate("/cart");
   };
 
   const handleWhatsApp = () => {
     if (!product) return;
-    const sizeLabel = selectedSize || product.size || "";
-    const priceText = isNaN(finalPrice) ? "" : `Price: ₹${finalPrice.toFixed(2)}\n`;
+    const keys = normalizeSizeEntries(product).map((e) => e.size);
+    const sizeLabel = (selectedSize || keys[0] || "").trim();
+    const waPrice = getPriceForSize(product, sizeLabel);
+    const priceText = isNaN(waPrice) ? "" : `Price: ₹${waPrice.toFixed(2)}\n`;
     const message = encodeURIComponent(
       `Hi, I would like to know more about this perfume:\n${product.name}${
         sizeLabel ? ` (${sizeLabel})` : ""
@@ -147,10 +268,12 @@ function ProductDetail() {
     }
     try {
       setSubmittingReview(true);
+      const keys = normalizeSizeEntries(product).map((e) => e.size);
+      const sizeStr = (selectedSize || keys[0] || "").trim();
       const payload = {
         rating: ratingInput,
         comment: reviewText.trim(),
-        size: selectedSize || product.size || null,
+        size: sizeStr || null,
       };
       await submitProductReview(product._id, payload);
 
@@ -193,17 +316,49 @@ function ProductDetail() {
     );
   }
 
-  const basePrice =
-    product.basicPrice && product.discountedPrice
+  const sizeEntries = normalizeSizeEntries(product);
+  const effectiveSize = (
+    selectedSize ||
+    sizeEntries[0]?.size ||
+    ""
+  ).trim();
+  const selectedEntry = getSizeEntry(product, effectiveSize);
+  const finalPrice = selectedEntry
+    ? Number(selectedEntry.price)
+    : Number(product.discountedPrice ?? product.price ?? 0);
+
+  const displayBasic =
+    selectedEntry?.basicPrice != null &&
+    selectedEntry.basicPrice > finalPrice
+      ? selectedEntry.basicPrice
+      : sizeEntries.length <= 1 &&
+        product.basicPrice != null &&
+        Number(product.basicPrice) > finalPrice
       ? Number(product.basicPrice)
-      : Number(product.discountedPrice ?? product.price ?? 0);
+      : null;
 
-  const finalPrice = Number(product.discountedPrice ?? product.price ?? 0);
+  const imageUrls = (
+    Array.isArray(product.images) && product.images.length
+      ? product.images
+      : product.image
+      ? [product.image]
+      : []
+  ).filter((u) => typeof u === "string" && u.trim());
 
-  const sizeOptions =
-    Array.isArray(product.sizes) && product.sizes.length
-      ? product.sizes
-      : [product.size].filter(Boolean);
+  const isGift = isGiftProduct(product);
+
+  const handleCarouselUserIntent = () => {
+    pauseUntilRef.current = Date.now() + 4000;
+  };
+
+  const handleCarouselScroll = () => {
+    const el = carouselRef.current;
+    if (!el) return;
+    const slideWidth = el.clientWidth || 1;
+    const idx = Math.round(el.scrollLeft / slideWidth);
+    const nextIdx = Math.min(Math.max(idx, 0), Math.max(imageUrls.length - 1, 0));
+    if (nextIdx !== currentImageIndex) setCurrentImageIndex(nextIdx);
+  };
 
   const totalReviews = reviewSummary?.reviews?.length || 0;
   const totalReviewPages = totalReviews ? Math.ceil(totalReviews / REVIEWS_PER_PAGE) : 1;
@@ -244,11 +399,37 @@ function ProductDetail() {
             animate="visible"
           >
             <div className="product-detail-image-wrapper">
-              <img
-                src={product.image}
-                alt={product.name}
-                className="product-detail-image"
-              />
+              <div
+                className="product-detail-carousel"
+                ref={carouselRef}
+                onScroll={handleCarouselScroll}
+                onPointerDown={handleCarouselUserIntent}
+                onWheel={handleCarouselUserIntent}
+                aria-label={`${product.name} images`}
+              >
+                {imageUrls.length > 0 ? (
+                  imageUrls.map((url, idx) => (
+                    <div className="product-detail-slide" key={`${url}-${idx}`}>
+                      <img
+                        src={url}
+                        alt={`${product.name} - ${idx + 1}`}
+                        className="product-detail-image"
+                        draggable="false"
+                        loading="lazy"
+                      />
+                    </div>
+                  ))
+                ) : (
+                  <div className="product-detail-slide">
+                    <img
+                      src={product.image}
+                      alt={product.name}
+                      className="product-detail-image"
+                      draggable="false"
+                    />
+                  </div>
+                )}
+              </div>
               {isSoldOut && <div className="product-detail-sold-out">SOLD OUT</div>}
             </div>
           </motion.div>
@@ -258,11 +439,11 @@ function ProductDetail() {
               {product.category || "SIRIUS PERFUMES"}
             </span>
             <h1 className="product-detail-title">{product.name}</h1>
-            {product.size && (
-              <p className="product-detail-subtitle">{product.size} Bottle</p>
+            {sizeEntries.length > 0 && (
+              <p className="product-detail-subtitle">{effectiveSize} Bottle</p>
             )}
 
-            {sizeOptions.length > 0 && (
+            {sizeEntries.length > 0 && (
               <div className="product-detail-size-row">
                 <label className="product-detail-size-label" htmlFor="size-select">
                   Size
@@ -270,25 +451,32 @@ function ProductDetail() {
                 <select
                   id="size-select"
                   className="product-detail-size-select"
-                  value={selectedSize}
+                  value={effectiveSize}
                   onChange={(e) => setSelectedSize(e.target.value)}
+                  aria-label="Choose bottle size"
                 >
-                  {sizeOptions.map((sz) => (
-                    <option key={sz} value={sz}>
-                      {sz}
-                    </option>
-                  ))}
+                  {sizeEntries.map((entry, idx) => {
+                    const optValue = resolveSizeLabel(entry.size);
+                    if (!optValue) return null;
+                    return (
+                      <option key={`${optValue}-${idx}`} value={optValue}>
+                        {optValue}
+                      </option>
+                    );
+                  })}
                 </select>
               </div>
             )}
 
-            <div className="product-detail-price-row">
-              {product.basicPrice &&
-              product.discountedPrice &&
-              product.basicPrice !== product.discountedPrice ? (
+            <div
+              className="product-detail-price-row"
+              aria-live="polite"
+              aria-atomic="true"
+            >
+              {displayBasic != null ? (
                 <>
                   <span className="product-detail-price-actual">
-                    ₹{basePrice.toFixed(2)}
+                    ₹{displayBasic.toFixed(2)}
                   </span>
                   <span className="product-detail-price-final">
                     ₹{finalPrice.toFixed(2)}
@@ -303,55 +491,97 @@ function ProductDetail() {
 
             <p className="product-detail-tax-note">Inclusive of all taxes</p>
 
-            <div className="product-detail-actions">
-              {qty === 0 ? (
+            {isGift ? (
+              <>
+                <p className="product-detail-gift-lead">
+                  Choose the box size above, then pick up to four fragrances to go
+                  inside. We&apos;ll show scents that match your selected size when
+                  possible.
+                </p>
                 <button
-                  className="product-detail-add-btn"
-                  onClick={() => addToCart(product)}
+                  type="button"
+                  className="product-detail-gift-customize-btn"
+                  onClick={() => setGiftCustomizeOpen(true)}
                   disabled={isSoldOut}
                 >
-                  <FaShoppingBag className="product-detail-btn-icon" aria-hidden />
-                  Add to Bag
+                  <FaGift className="product-detail-btn-icon" aria-hidden />
+                  Customize gift
                 </button>
-              ) : (
-                <div className="product-detail-qty-group">
+              </>
+            ) : (
+              <div className="product-detail-actions">
+                {qty === 0 ? (
                   <button
-                    className="qty-btn"
-                    onClick={() => removeFromCart(product)}
+                    className="product-detail-add-btn"
+                    onClick={() => addToCart(product, effectiveSize)}
                     disabled={isSoldOut}
                   >
-                    -
+                    <FaShoppingBag className="product-detail-btn-icon" aria-hidden />
+                    Add to Bag
                   </button>
-                  <span className="qty-value">{qty}</span>
-                  <button
-                    className="qty-btn"
-                    onClick={() => addToCart(product)}
-                    disabled={isSoldOut}
-                  >
-                    +
-                  </button>
-                </div>
-              )}
-            </div>
+                ) : (
+                  <div className="product-detail-qty-group">
+                    <button
+                      className="qty-btn"
+                      onClick={() => removeFromCart(cartLine)}
+                      disabled={isSoldOut}
+                    >
+                      -
+                    </button>
+                    <span className="qty-value">{qty}</span>
+                    <button
+                      className="qty-btn"
+                      onClick={() => addToCart(product, effectiveSize)}
+                      disabled={isSoldOut}
+                    >
+                      +
+                    </button>
+                  </div>
+                )}
+              </div>
+            )}
 
-            <div className="product-detail-secondary-actions">
+            {!isGift && (
+              <div className="product-detail-secondary-actions">
+                <button
+                  className="product-detail-buy-btn"
+                  onClick={handleBuyNow}
+                  disabled={isSoldOut}
+                >
+                  <FaCreditCard className="product-detail-btn-icon" aria-hidden />
+                  Buy Now
+                </button>
+                <button
+                  className="product-detail-whatsapp-btn"
+                  type="button"
+                  onClick={handleWhatsApp}
+                >
+                  <FaWhatsapp className="product-detail-btn-icon" aria-hidden />
+                  Shop on WhatsApp
+                </button>
+              </div>
+            )}
+
+            {isGift && (
               <button
-                className="product-detail-buy-btn"
-                onClick={handleBuyNow}
-                disabled={isSoldOut}
-              >
-                <FaCreditCard className="product-detail-btn-icon" aria-hidden />
-                Buy Now
-              </button>
-              <button
-                className="product-detail-whatsapp-btn"
                 type="button"
+                className="product-detail-whatsapp-btn product-detail-whatsapp-btn--solo"
                 onClick={handleWhatsApp}
               >
                 <FaWhatsapp className="product-detail-btn-icon" aria-hidden />
                 Shop on WhatsApp
               </button>
-            </div>
+            )}
+
+            {isGift && giftCustomizeOpen && (
+              <GiftCustomizePanel
+                giftProduct={product}
+                giftSize={effectiveSize}
+                allProducts={giftCatalog}
+                isSoldOut={isSoldOut}
+                onClose={() => setGiftCustomizeOpen(false)}
+              />
+            )}
 
             <div className="product-detail-description-block">
               <h2 className="product-detail-section-title">Description</h2>
@@ -368,13 +598,15 @@ function ProductDetail() {
                   <span className="meta-value">{product.category}</span>
                 </div>
               )}
-              {product.size && (
+              {sizeEntries.length > 0 && (
                 <div className="product-detail-meta-item">
                   <span className="meta-label">Size</span>
-                  <span className="meta-value">{product.size}</span>
+                  <span className="meta-value">{effectiveSize}</span>
                 </div>
               )}
             </div>
+
+            <PromoBanners items={productBetweenDescReviews} />
 
             <div className="product-detail-reviews">
               <h2 className="product-detail-section-title">Reviews & Ratings</h2>

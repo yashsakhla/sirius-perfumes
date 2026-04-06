@@ -25,6 +25,7 @@ instance.interceptors.response.use(
     localStorage.removeItem("authToken");
     localStorage.removeItem("accountDetails");
     localStorage.removeItem("offerPopupShown");
+    localStorage.removeItem("siriusNotificationDismissedId");
      // or use your login route
     }
     return Promise.reject(error);

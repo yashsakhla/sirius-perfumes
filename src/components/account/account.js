@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useUser } from "../../services/userContext";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { FaWindowClose } from "react-icons/fa";
 import { FaStopCircle } from "react-icons/fa";
 import {
@@ -11,9 +11,11 @@ import {
 import { useCart } from "../../services/cartContext";
 import { FaEdit, FaUser, FaShoppingCart, FaTag } from "react-icons/fa";
 import { motion } from "framer-motion";
-import Loader from "../loader/loader";
+import { AccountPageLoader, AccountSavingOverlay } from "./AccountLoaders";
 import ErrorPopup from "../error-popup/Error-popup";
 import "./account.css";
+import PromoBanners from "../promo-banners/promo-banners";
+import { accountAfterHero } from "../promo-banners/promo-data";
 
 const bannerContentVariants = {
   hidden: { opacity: 0, y: 60 },
@@ -271,11 +273,12 @@ export default function Account() {
     localStorage.removeItem("authToken");
     localStorage.removeItem("accountDetails");
     localStorage.removeItem("offerPopupShown");
+    localStorage.removeItem("siriusNotificationDismissedId");
     navigate("/login");
   };
 
   if (!account) {
-    if (loading) return <Loader />;
+    if (loading) return <AccountPageLoader />;
     navigate("/login");
     return null;
   }
@@ -283,29 +286,42 @@ export default function Account() {
   const isPremiumUser =
     account?.premiumUser === true || user?.premiumUser === true;
 
+  const firstName = (account.name || "").trim().split(/\s+/)[0] || "there";
+
   return (
     <div className={`account-page${isPremiumUser ? " premium" : ""}`}>
-      {loading && <Loader />}
+      {loading && <AccountSavingOverlay />}
 
-      {/* Banner */}
-      <section className="banner">
+      <header className="account-hero">
+        <div className="account-hero__bg" aria-hidden />
         <motion.div
-          className="banner-content"
+          className="account-hero__content"
           variants={bannerContentVariants}
           initial="hidden"
           animate="visible"
         >
-          <motion.span className="banner-label" variants={itemVariants}>
-            SIRIUS PERFUMES
+          <motion.span className="account-hero__label" variants={itemVariants}>
+            Sirius Perfumes
           </motion.span>
-          <motion.h1 className="banner-header" variants={itemVariants}>
-            MY ACCOUNT <FaUser size={40} />
+          <motion.h1 className="account-hero__title" variants={itemVariants}>
+            <span className="account-hero__title-text">My account</span>
+            <span className="account-hero__title-icon" aria-hidden>
+              <FaUser />
+            </span>
           </motion.h1>
-          <motion.p className="banner-desc" variants={itemVariants}>
-            Welcome to your account dashboard
+          <motion.p className="account-hero__greet" variants={itemVariants}>
+            Hello, {firstName}
+          </motion.p>
+          <motion.p className="account-hero__sub" variants={itemVariants}>
+            Manage your profile, cart, and orders in one place.
           </motion.p>
         </motion.div>
-      </section>
+      </header>
+
+      <PromoBanners
+        items={accountAfterHero}
+        className="account-promo-strip"
+      />
 
       {/* PREMIUM BADGE */}
       {isPremiumUser && (
@@ -323,10 +339,13 @@ export default function Account() {
       {/* Main account content */}
       <div className="account-content">
         {/* Account Details Section */}
-        <section className="account-section">
+        <section className="account-section account-section--profile">
+          <div className="account-profile-badge" aria-hidden>
+            {(account.name || account.email || "?").charAt(0).toUpperCase()}
+          </div>
           <div className="section-title">
             <FaUser className="section-icon" />
-            Account Details
+            Profile
           </div>
 
           {/* Name */}
@@ -462,22 +481,22 @@ export default function Account() {
 
                   {/* Pincode validation messages */}
                   {isPincodeValid === true && (
-                    <div style={{ color: "green", marginTop: 4 }}>
-                      ✅ We will deliver here
+                    <div className="account-pin-msg account-pin-msg--ok">
+                      We can deliver to this pincode.
                     </div>
                   )}
                   {isPincodeValid === false &&
                     pincodeInfo &&
                     pincodeInfo.length > 0 && (
-                      <div style={{ color: "orange", marginTop: 4 }}>
-                        ⚠️ City or State doesn&apos;t match the pincode. Please
+                      <div className="account-pin-msg account-pin-msg--warn">
+                        City or state doesn&apos;t match this pincode. Please
                         update.
                       </div>
                     )}
                   {isPincodeValid === false &&
                     (!pincodeInfo || pincodeInfo.length === 0) && (
-                      <div style={{ color: "red", marginTop: 4 }}>
-                        ❌ Invalid Pincode
+                      <div className="account-pin-msg account-pin-msg--err">
+                        Invalid pincode.
                       </div>
                     )}
                 </div>
@@ -519,21 +538,68 @@ export default function Account() {
         </section>
 
         {/* Cart Section */}
-        <section className="account-section">
+        <section className="account-section account-section--cart">
           <div className="section-title">
             <FaShoppingCart className="section-icon" />
-            Cart ({cart && cart.length})
+            Cart
+            <span className="section-count">{cart?.length ?? 0}</span>
           </div>
           {cart && cart.length > 0 ? (
-            <div>
-              {cart.map((item) => (
-                <div key={item.id || item._id}>
-                  {item.name} × {item.qty}
-                </div>
-              ))}
-            </div>
+            <ul className="account-cart-grid">
+              {cart.map((item) => {
+                const lineKey = `${item._id}-${String(item.size ?? "").trim()}`;
+                const unit = Number(item.discountedPrice ?? item.price ?? 0);
+                const subtotal = unit * (item.qty || 0);
+                const imgSrc = item.image || "";
+                return (
+                  <li key={lineKey} className="account-cart-product">
+                    <div className="account-cart-product__media">
+                      {imgSrc ? (
+                        <img
+                          src={imgSrc}
+                          alt={item.name || "Product"}
+                          className="account-cart-product__img"
+                        />
+                      ) : (
+                        <div className="account-cart-product__img-fallback" aria-hidden />
+                      )}
+                    </div>
+                    <div className="account-cart-product__info">
+                      <span className="account-cart-product__name">{item.name}</span>
+                      {item.size ? (
+                        <span className="account-cart-product__variant">
+                          {item.size} bottle
+                        </span>
+                      ) : null}
+                      <div className="account-cart-product__stats">
+                        <span className="account-cart-product__unit">
+                          ₹{unit.toFixed(2)}
+                          <span className="account-cart-product__unit-label"> / unit</span>
+                        </span>
+                        <span className="account-cart-product__qty-pill">
+                          ×{item.qty}
+                        </span>
+                      </div>
+                      <span className="account-cart-product__subtotal">
+                        Subtotal <strong>₹{subtotal.toFixed(2)}</strong>
+                      </span>
+                    </div>
+                  </li>
+                );
+              })}
+            </ul>
           ) : (
             <p className="empty-cart-msg">Your cart is empty.</p>
+          )}
+          {(!cart || cart.length === 0) && (
+            <Link to="/shop" className="account-cart-link account-cart-link--compact">
+              Browse fragrances
+            </Link>
+          )}
+          {cart && cart.length > 0 && (
+            <Link to="/cart" className="account-cart-link account-cart-link--secondary account-cart-link--compact">
+              Review bag & checkout
+            </Link>
           )}
         </section>
 
@@ -571,24 +637,14 @@ export default function Account() {
           </section>
         )}
 
-        {loading ? (
-          <Loader />
-        ) : (
-          orders?.length > 0 && (
-            <section className="account-section">
+        {orders?.length > 0 && (
+            <section className="account-section account-section--orders">
               <div className="section-title">
                 <FaTag className="section-icon" />
-                Order History
+                Recent orders
               </div>
 
               {orders.map((order, idx) => {
-                const statusSteps = [
-                  "Ordered",
-                  "Processing",
-                  "Dispatched",
-                  "Delivered",
-                ];
-
                 const shippingSteps = [
                   {
                     label: "Ordered",
@@ -620,9 +676,6 @@ export default function Account() {
                     done: order.Deliverystatus === "Delivered",
                   },
                 ];
-                const currentStep = statusSteps.indexOf(order.Deliverystatus);
-                const deliveryDate = new Date(order.date);
-                deliveryDate.setDate(deliveryDate.getDate() + 5);
 
                 return (
                   <div className="order-card">
@@ -638,7 +691,11 @@ export default function Account() {
                         <span
                           className={`order-card__payment-status order-card__payment-status--${order.paymentStatus}`}
                         >
-                          {order.paymentStatus == "COMPLETED" ? "ORDER CONFIRMED" : order.paymentStatus == "FAILED" ? "PAYMENT FAILED" : "INCOMPLETE PAYMENT"}
+                          {order.paymentStatus === "COMPLETED"
+                            ? "ORDER CONFIRMED"
+                            : order.paymentStatus === "FAILED"
+                            ? "PAYMENT FAILED"
+                            : "INCOMPLETE PAYMENT"}
                         </span>
                         <div className="order-card__product-title">
                           {order.products.join(", ")}
@@ -750,12 +807,11 @@ export default function Account() {
                 );
               })}
             </section>
-          )
         )}
 
         {/* Logout Button */}
-        <button className="account-logout-btn" onClick={handleLogout}>
-          Logout
+        <button type="button" className="account-logout-btn" onClick={handleLogout}>
+          Sign out
         </button>
       </div>
 

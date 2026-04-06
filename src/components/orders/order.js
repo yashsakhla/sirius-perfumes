@@ -2,6 +2,8 @@ import React, { useEffect, useState } from "react";
 import { fetchAccountDetails } from "../../services/api";
 import { FaShoppingBag, FaBox, FaTruck, FaCheckCircle, FaArchive } from "react-icons/fa";
 import "./order.css";
+import PromoBanners from "../promo-banners/promo-banners";
+import { ordersUnderHero } from "../promo-banners/promo-data";
 
 const STATUS_STEPS = [
   { label: "Ordered", icon: <FaShoppingBag /> },
@@ -35,6 +37,8 @@ export default function OrderHistoryPage() {
           Track your orders and see your past purchases.
         </p>
       </section>
+
+      <PromoBanners items={ordersUnderHero} />
 
       {loading ? (
         <div className="order-history-loading">Loading...</div>

@@ -7,6 +7,8 @@ import { useCart } from "../../services/cartContext";
 import { getAllProducts } from "../../services/api";
 import ShiningLoader from "../shiningLoader/ShiningLoader";
 import FixedBuyNow from "../fixedButton/FixedBuyNow";
+import PromoBanners from "../promo-banners/promo-banners";
+import { shopUnderHero } from "../promo-banners/promo-data";
 import "./shop.css";
 
 const bannerContentVariants = {
@@ -108,6 +110,7 @@ function ShopPage() {
               </motion.p>
             </motion.div>
           </section>
+          <PromoBanners items={shopUnderHero} />
           <div className="shop-content">
             <FilterSidebar
               categories={categories}
@@ -115,8 +118,9 @@ function ShopPage() {
               onSearchChange={handleSearchChange}
             />
             <section className="shop-products">
+              <h2 className="shop-products-heading">Our fragrances</h2>
               {filteredProducts.length === 0 ? (
-                <p>No products found.</p>
+                <p className="shop-products-empty">No products found.</p>
               ) : (
                 filteredProducts.map((product, idx) => {
                   const cartItem = cart.find((item) => item._id === product._id);

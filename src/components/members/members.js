@@ -2,6 +2,8 @@ import React from "react";
 import { FaUser } from "react-icons/fa";
 import { motion } from "framer-motion";
 import "./members.css";
+import PromoBanners from "../promo-banners/promo-banners";
+import { membersAfterHero } from "../promo-banners/promo-data";
 
 const bannerContentVariants = {
   hidden: { opacity: 0, y: 60 },
@@ -43,6 +45,8 @@ const ExclusiveMembers = () => {
           </motion.p>
         </motion.div>
       </section>
+
+      <PromoBanners items={membersAfterHero} />
 
       <div className="exclusive-members-page">
         <section className="members-exclusive-header">

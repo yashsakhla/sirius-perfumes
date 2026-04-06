@@ -69,6 +69,36 @@
   justify-content: center;
 }
 
+.product-detail-carousel {
+  width: 100%;
+  max-width: 380px;
+  max-height: 420px;
+  display: flex;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scroll-snap-type: x mandatory;
+  scroll-behavior: smooth;
+  border-radius: 18px;
+  -webkit-overflow-scrolling: touch;
+}
+
+.product-detail-slide {
+  flex: 0 0 100%;
+  width: 100%;
+  scroll-snap-align: start;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Hide scrollbar (still scrollable) */
+.product-detail-carousel::-webkit-scrollbar {
+  height: 0;
+}
+.product-detail-carousel {
+  scrollbar-width: none;
+}
+
 .product-detail-image {
   width: 100%;
   max-width: 380px;
@@ -229,6 +259,47 @@
 .product-detail-whatsapp-btn:hover {
   background: #20bd5a;
   opacity: 1;
+}
+
+.product-detail-whatsapp-btn--solo {
+  margin-top: 10px;
+}
+
+.product-detail-gift-lead {
+  margin: 0 0 14px;
+  font-size: 0.88rem;
+  line-height: 1.55;
+  color: #5c4a2e;
+  max-width: 36em;
+}
+
+.product-detail-gift-customize-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  max-width: 320px;
+  background: linear-gradient(180deg, #2c2419 0%, #1a1510 100%);
+  color: #fcf7ee;
+  border: 1px solid rgba(253, 196, 48, 0.35);
+  padding: 12px 24px;
+  border-radius: 999px;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: inherit;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+}
+
+.product-detail-gift-customize-btn:hover:not(:disabled) {
+  filter: brightness(1.08);
+}
+
+.product-detail-gift-customize-btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
 }
 
 .product-detail-qty-group {

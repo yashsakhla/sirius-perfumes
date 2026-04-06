@@ -1,4 +1,6 @@
 import React from 'react';
+import PromoBanners from '../promo-banners/promo-banners';
+import { policyBetweenPrivacyAndTerms, policyBeforeReturns } from '../promo-banners/promo-data';
 
 export default function Policy() {
   return (
@@ -53,6 +55,8 @@ export default function Policy() {
         Please check this Policy periodically for updates. We may notify you of significant changes as required by law.
       </p>
 
+      <PromoBanners items={policyBetweenPrivacyAndTerms} />
+
       <hr style={{ margin: '32px 0' }} />
 
       <h1 style={{ textAlign: 'center', marginBottom: 24 }}>Terms & Conditions</h1>
@@ -82,6 +86,8 @@ export default function Policy() {
         <li>No shipments on weekends or holidays.</li>
         <li>High volume may delay shipments; we will inform you of significant delays.</li>
       </ul>
+
+      <PromoBanners items={policyBeforeReturns} />
 
       <hr style={{ margin: '32px 0' }} />
 

@@ -1,5 +1,12 @@
-import React, { useEffect, useState } from "react";
-import { FaShoppingBag, FaTrashAlt, FaShoppingCart, FaLock } from "react-icons/fa";
+import React, { useEffect, useMemo, useState } from "react";
+import {
+  FaShoppingBag,
+  FaTrashAlt,
+  FaShoppingCart,
+  FaLock,
+  FaMobileAlt,
+  FaTruck,
+} from "react-icons/fa";
 import { motion } from "framer-motion";
 import { useCart } from "../../services/cartContext";
 import {
@@ -11,13 +18,14 @@ import {
   getToken,
   updateOrderStatus,
 } from "../../services/api";
-import { indianStatesAndCities } from "../../constants/location";
 import { Link, useNavigate, createSearchParams } from "react-router-dom";
-import Loader from "../loader/loader";
+import { BrandPageLoader } from "../brand-loader/BrandLoader";
 import ErrorPopup from "../error-popup/Error-popup";
 import "./cart.css";
 import { url } from "../../env.config";
 import axios from "axios";
+import PromoBanners from "../promo-banners/promo-banners";
+import { cartAfterHero, cartBeforeCheckout } from "../promo-banners/promo-data";
 
 const bannerContentVariants = {
   hidden: { opacity: 0, y: 60 },
@@ -31,6 +39,64 @@ const itemVariants = {
   hidden: { opacity: 0, y: 32 },
   visible: { opacity: 1, y: 0, transition: { duration: 0.7 } }
 };
+
+function normalizeLocationPart(s) {
+  return String(s ?? "")
+    .toLowerCase()
+    .trim()
+    .replace(/\./g, "")
+    .replace(/\s+/g, " ");
+}
+
+/**
+ * India Post often uses district / area names that differ from what users type.
+ * Accept pincode as valid when state loosely matches and city matches district,
+ * block, or locality (Name) in either direction.
+ */
+function postOfficeMatchesUser(po, cityRaw, stateRaw) {
+  const city = normalizeLocationPart(cityRaw);
+  const state = normalizeLocationPart(stateRaw);
+  const district = normalizeLocationPart(po.District);
+  const st = normalizeLocationPart(po.State);
+  const block = normalizeLocationPart(po.Block);
+  const name = normalizeLocationPart(po.Name);
+
+  if (!city && !state) return true;
+
+  if (state && st) {
+    const compactUser = state.replace(/\s/g, "");
+    const compactApi = st.replace(/\s/g, "");
+    const stateOk =
+      st === state ||
+      st.includes(state) ||
+      state.includes(st) ||
+      compactUser === compactApi ||
+      compactApi.includes(compactUser) ||
+      compactUser.includes(compactApi);
+    if (!stateOk) return false;
+  }
+
+  if (!city) return true;
+
+  if (!district && !block && !name) return true;
+
+  const cityWords = city.split(" ").filter(Boolean);
+  const cityMatch =
+    district === city ||
+    district.includes(city) ||
+    city.includes(district) ||
+    (block &&
+      (block.includes(city) ||
+        city.includes(block) ||
+        cityWords.some((w) => w.length > 2 && block.includes(w)))) ||
+    (name &&
+      (name.includes(city) ||
+        city.includes(name) ||
+        cityWords.some((w) => w.length > 2 && name.includes(w))));
+
+  return cityMatch;
+}
+
 function CartPage() {
   const navigate = useNavigate();
   const { cart, addToCart, removeFromCart, clearCart } = useCart();
@@ -67,7 +133,7 @@ function CartPage() {
   const [isPincodeValid, setIsPincodeValid] = useState(null); // null=unknown, true=valid, false=invalid
   const [isPhoneValid, setIsPhoneValid] = useState(false);
 
-  // Payment
+  /** "UPI" = pay full amount online; "COD" = 10% now, rest on delivery */
   const [paymentMethod, setPaymentMethod] = useState("UPI");
 
   // Price Summary
@@ -80,6 +146,22 @@ function CartPage() {
   });
 
   const isLoggedIn = Boolean(user && account);
+
+  const orderTotal = useMemo(() => {
+    const t = Number(priceSummary.total);
+    return Number.isFinite(t) ? Math.round(t * 100) / 100 : 0;
+  }, [priceSummary.total]);
+
+  const codAdvanceAmount = useMemo(
+    () => Math.round(orderTotal * 0.1 * 100) / 100,
+    [orderTotal]
+  );
+  const codBalanceAmount = useMemo(
+    () => Math.round((orderTotal - codAdvanceAmount) * 100) / 100,
+    [orderTotal, codAdvanceAmount]
+  );
+  const amountPayableNow =
+    paymentMethod === "COD" ? codAdvanceAmount : orderTotal;
 
   // Load user, account, address, and phone on mount or user change
   useEffect(() => {
@@ -152,51 +234,66 @@ function CartPage() {
 }, [user]);
 
 
-  // Debounce pincode input for API call
+  // Debounce pincode (digits only) — always sync so clearing the field resets validation
   useEffect(() => {
     const handler = setTimeout(() => {
-      if (addressForm.pincode) {
-        setDebouncedPincode(addressForm.pincode);
-      }
-    }, 500);
+      const digits = String(addressForm.pincode || "").replace(/\D/g, "").slice(0, 6);
+      setDebouncedPincode(digits);
+    }, 450);
     return () => clearTimeout(handler);
   }, [addressForm.pincode]);
 
-  // Validate pincode with city/state match against API
+  // Validate pincode via India Post API; don’t tie this to full-page loading
   useEffect(() => {
-    setLoading(true);
-    if (debouncedPincode.length === 6) {
-      fetch(`https://api.postalpincode.in/pincode/${debouncedPincode}`)
-        .then(res => res.json())
-        .then(data => {
-          if (data[0].Status === "Success") {
-            setLoading(false);
-            const postOffices = data[0].PostOffice || [];
-
-            const match = postOffices.some(po =>
-              po.District.toLowerCase() === (addressForm.city || "").toLowerCase() &&
-              po.State.toLowerCase() === (addressForm.state || "").toLowerCase()
-            );
-
-            setPincodeInfo(postOffices);
-            setIsPincodeValid(match);
-          } else {
-            setLoading(false);
-            setPincodeInfo(null);
-            setIsPincodeValid(false);
-          }
-        })
-        .catch(err => {
-          setLoading(false);
-          console.error("API error:", err);
-          setPincodeInfo(null);
-          setIsPincodeValid(false);
-        });
-    } else {
-       setLoading(false);
+    if (debouncedPincode.length !== 6) {
       setIsPincodeValid(null);
       setPincodeInfo(null);
+      return;
     }
+
+    let cancelled = false;
+    fetch(`https://api.postalpincode.in/pincode/${debouncedPincode}`)
+      .then((res) => res.json())
+      .then((data) => {
+        if (cancelled) return;
+        const block = Array.isArray(data) ? data[0] : null;
+        if (!block || block.Status !== "Success") {
+          setPincodeInfo(null);
+          setIsPincodeValid(false);
+          return;
+        }
+        const postOffices = block.PostOffice || [];
+        if (!postOffices.length) {
+          setPincodeInfo(null);
+          setIsPincodeValid(false);
+          return;
+        }
+
+        setPincodeInfo(postOffices);
+
+        const city = (addressForm.city || "").trim();
+        const st = (addressForm.state || "").trim();
+
+        if (!city && !st) {
+          setIsPincodeValid(true);
+          return;
+        }
+
+        const match = postOffices.some((po) =>
+          postOfficeMatchesUser(po, addressForm.city, addressForm.state)
+        );
+        setIsPincodeValid(match);
+      })
+      .catch((err) => {
+        if (cancelled) return;
+        console.error("Pincode API error:", err);
+        setPincodeInfo(null);
+        setIsPincodeValid(false);
+      });
+
+    return () => {
+      cancelled = true;
+    };
   }, [debouncedPincode, addressForm.city, addressForm.state]);
 
   // Simple phone validation: 10 digits only
@@ -222,16 +319,45 @@ function CartPage() {
           setAppliedOfferCode(null);
           return;
         }
+        const regularLines = cart.filter((item) => !item.isGiftBundle);
+        const giftSubtotal = cart
+          .filter((item) => item.isGiftBundle)
+          .reduce(
+            (s, item) => s + Number(item.discountedPrice ?? item.price ?? 0) * item.qty,
+            0
+          );
+
+        if (regularLines.length === 0) {
+          setPriceSummary({
+            basicSubtotal: giftSubtotal,
+            discountedSubtotal: giftSubtotal,
+            tax: 0,
+            deliveryCharges: 0,
+            total: giftSubtotal,
+          });
+          setDiscount(0);
+          setAppliedOfferCode(null);
+          if (couponApplied) {
+            setCouponApplied(false);
+          }
+          return;
+        }
+
         const res = await getCartPrice({
-          products: cart.map(item => ({ productId: item._id, qty: item.qty })),
+          products: regularLines.map((item) => ({
+            productId: item._id,
+            qty: item.qty,
+          })),
           couponCode: couponApplied ? coupon : "",
         });
+        const apiTotal = res.total ?? res.discountedSubtotal ?? 0;
+        const mergedTotal = apiTotal + giftSubtotal;
         setPriceSummary({
-          basicSubtotal: res.basicSubtotal,
-          discountedSubtotal: res.discountedSubtotal,
+          basicSubtotal: (res.basicSubtotal ?? 0) + giftSubtotal,
+          discountedSubtotal: (res.discountedSubtotal ?? 0) + giftSubtotal,
           tax: res.tax || 0,
           deliveryCharges: res.deliveryCharges || 0,
-          total: res.total,
+          total: mergedTotal,
         });
         setDiscount(res.discount || 0);
         setAppliedOfferCode(res.couponApplied || null);
@@ -241,10 +367,8 @@ function CartPage() {
           setAppliedOfferCode(null);
           alert("Coupon is invalid or expired");
         }
-        setLoading(false);
       } catch (e) {
         setDiscount(0);
-        setLoading(false);
         setCouponApplied(false);
         setAppliedOfferCode(null);
       }
@@ -283,30 +407,55 @@ const handleSubmitOrder = async () => {
   }
   setLoading(true);
   try {
+    const giftBundles = cart
+      .filter((item) => item.isGiftBundle)
+      .map((item) => ({
+        giftProductId: item.giftProductId,
+        giftSize: item.giftSize,
+        chosenProducts: (item.chosenProducts || []).map((c) => ({
+          productId: c.productId,
+          size: c.size,
+        })),
+      }));
+
     const orderPayload = {
-      products: cart.map(item => `${item.name} (x${item.qty})`),
+      products: cart.map((item) => {
+        if (item.isGiftBundle) {
+          const names = (item.chosenProducts || [])
+            .map((c) => c.name || c.productId)
+            .join(", ");
+          return `Gift: ${item.name} — ${names} (x${item.qty})`;
+        }
+        const sizePart = item.size ? ` (${item.size} Bottle)` : "";
+        return `${item.name}${sizePart} (x${item.qty})`;
+      }),
+      giftBundles,
       productImg: cart[0]?.image || "",
       coupon: couponApplied ? coupon : "",
       offer: "",
-      totalPrice: priceSummary.total,
-      paymentMode: "UPI",
+      totalPrice: orderTotal,
+      /** Amount to charge via payment gateway (full for UPI, 10% for COD) */
+      amountPayableNow,
+      paymentMode: paymentMethod,
+      ...(paymentMethod === "COD"
+        ? {
+            codAdvancePercent: 10,
+            codAdvanceAmount,
+            codBalanceOnDelivery: codBalanceAmount,
+          }
+        : {}),
       address,
-      phone
+      phone,
     };
-    const totalPrice = priceSummary.total;
-    const payload = {orderPayload:orderPayload, totalPrice:totalPrice,phone: phone}
-    // Initiate payment session with backend
+    // UPI and COD both: submitOrder → getToken (payment API) → PhonePe. Backend uses amountPayableNow (full vs 10%).
     const res = await submitOrder(orderPayload);
     console.log("Payment initiation response:", res);
-    if (res.success) {
-      // Redirect to PhonePe payment page
-      handlePhonePePayment(res.order);
-      return; // User will be redirected by PhonePe after payment
-    } else {
-      alert("Failed to launch PhonePe payment. Please try again.");
-      setLoading(false);
+    if (res.success && res.order) {
+      await handlePhonePePayment(res.order);
       return;
     }
+    alert("Failed to launch payment. Please try again.");
+    setLoading(false);
   } catch (error) {
     console.error("❌ Error submitting order:", error);
     setLoading(false);
@@ -314,13 +463,9 @@ const handleSubmitOrder = async () => {
   }
 };
 
-
-// cart.js or your payment component
 const handlePhonePePayment = async (order) => {
   try {
-    // 1️⃣ Call backend to generate PhonePe token
     const res = await getToken(order);
-
 
     if (!res?.redirectUrl) {
       setLoading(false);
@@ -328,58 +473,55 @@ const handlePhonePePayment = async (order) => {
       return;
     }
 
-    // 2️⃣ Open PhonePe IFRAME checkout
     window.PhonePeCheckout.transact({
-      tokenUrl: res.redirectUrl, // <-- Points to backend-generated token
+      tokenUrl: res.redirectUrl,
       type: "IFRAME",
-      callback: async function(response) {
+      callback: async function (response) {
         console.log("Payment callback:", response);
 
         if (response === "CONCLUDED" || response.status === "SUCCESS") {
-          // 3️⃣ Update order payment status in backend
           const payload = {
             merchantOrderId: order.merchantOrderId,
-            paymentStatus: res.data.state,
+            paymentStatus: res?.data?.state,
             transactionId: "",
-            token: res?.token
+            token: res?.token,
           };
 
           const updateRes = await updateOrderStatus(payload);
-          if (updateRes.success) {
-            setLoading(false);
-            clearCart();
-            const queryParams = { orderId: order._id};
-              if(updateRes.getPhonepeStatus?.state === "COMPLETED"){
-                navigate({
-                  pathname: "/order-confirmed",
-                  search: `?${createSearchParams(queryParams)}`
-                });
-              }else if(updateRes.getPhonepeStatus?.state === "FAILED"){
-                navigate({
-                  pathname: "/order-failed",
-                  search: `?${createSearchParams(queryParams)}`
-                });
-              }else{
-                navigate({
-                  pathname: "/order-pending",
-                  search: `?${createSearchParams(queryParams)}`
-                });
-              }
-            // Optionally redirect user
-          } else {
+          if (!updateRes.success) {
             setLoading(false);
             alert("Payment Failed, If your Money is debited please, Contact support.");
+            return;
+          }
+
+          setLoading(false);
+          clearCart();
+          const queryParams = { orderId: order._id };
+          if (updateRes.getPhonepeStatus?.state === "COMPLETED") {
+            navigate({
+              pathname: "/order-confirmed",
+              search: `?${createSearchParams(queryParams)}`,
+            });
+          } else if (updateRes.getPhonepeStatus?.state === "FAILED") {
+            navigate({
+              pathname: "/order-failed",
+              search: `?${createSearchParams(queryParams)}`,
+            });
+          } else {
+            navigate({
+              pathname: "/order-pending",
+              search: `?${createSearchParams(queryParams)}`,
+            });
           }
         } else {
           setLoading(false);
           alert("Payment failed or cancelled.");
         }
-      }
+      },
     });
-
   } catch (err) {
     console.error("Error initiating PhonePe payment:", err);
-    setLoading(false)
+    setLoading(false);
     alert("Unable to initiate payment. Try again.");
   }
 };
@@ -441,7 +583,12 @@ const handlePhonePePayment = async (order) => {
 
   return (
     <div className="cart-page">
-      {loading && <Loader />}
+      {loading && (
+        <BrandPageLoader
+          message="Please wait…"
+          ariaLabel="Loading"
+        />
+      )}
       {errorPopup.show && <ErrorPopup message={errorPopup.message} onClose={closeErrorPopup} />}
       {/* Banner */}
       <section className="banner">
@@ -463,6 +610,8 @@ const handlePhonePePayment = async (order) => {
         </motion.div>
       </section>
 
+      <PromoBanners items={cartAfterHero} />
+
       {/* Main Content */}
       <div className="cart-content">
         <section className="cart-products">
@@ -480,7 +629,10 @@ const handlePhonePePayment = async (order) => {
                 style={{ filter: isLoggedIn ? "none" : "blur(2px)", pointerEvents: isLoggedIn ? "auto" : "none" }}
               >
                 {cart.map((item) => (
-                  <div className="product-cart-card" key={item._id}>
+                  <div
+                    className={`product-cart-card${item.isGiftBundle ? " product-cart-card--gift" : ""}`}
+                    key={`${item._id}-${item.size || ""}-${item.isGiftBundle ? "gift" : "line"}`}
+                  >
                     <img
                       src={item.image}
                       alt={item.name}
@@ -497,6 +649,20 @@ const handlePhonePePayment = async (order) => {
                         <FaTrashAlt />
                       </button>
                     </div>
+                    {item.size ? (
+                      <div className="product-cart-size">
+                        {item.isGiftBundle ? `Box: ${item.size}` : `${item.size} Bottle`}
+                      </div>
+                    ) : null}
+                    {item.isGiftBundle && item.chosenProducts?.length > 0 && (
+                      <ul className="product-cart-gift-lines">
+                        {item.chosenProducts.map((c) => (
+                          <li key={`${c.productId}-${c.size}`}>
+                            {c.name || "Fragrance"} · {c.size}
+                          </li>
+                        ))}
+                      </ul>
+                    )}
                     <div className="product-cart-divider" />
                     <div className="product-cart-row-2col">
                       <div className="product-cart-price-col">
@@ -523,14 +689,20 @@ const handlePhonePePayment = async (order) => {
                         <div className="product-cart-qty">
                           <button onClick={() => isLoggedIn && removeFromCart(item)} disabled={!isLoggedIn}>-</button>
                           <span>{item.qty}</span>
-                          <button onClick={() => isLoggedIn && addToCart(item)} disabled={!isLoggedIn}>+</button>
+                          <button
+                            onClick={() => isLoggedIn && !item.isGiftBundle && addToCart(item)}
+                            disabled={!isLoggedIn || item.isGiftBundle}
+                            title={item.isGiftBundle ? "Adjust gift on the product page" : undefined}
+                          >
+                            +
+                          </button>
                         </div>
                       </div>
                     </div>
                     <div className="product-cart-total-row">
                       <span className="product-cart-label">Total</span>
                       <span className="product-cart-subtotal">
-                        ₹{(item.discountedPrice * item.qty).toFixed(2)}
+                        ₹{(Number(item.discountedPrice ?? item.price) * item.qty).toFixed(2)}
                       </span>
                     </div>
                   </div>
@@ -552,6 +724,7 @@ const handlePhonePePayment = async (order) => {
           {/* Show coupon, address, payment and cart summary only if cart not empty */}
           {cart.length > 0 && isLoggedIn && (
             <>
+              <PromoBanners items={cartBeforeCheckout} />
               {/* Coupon Block */}
               <div className="cart-coupon-block">
                 <input
@@ -646,8 +819,19 @@ const handlePhonePePayment = async (order) => {
                       required
                     />
                     {/* Validation messages */}
-                    {isPincodeValid === true && <div style={{ color: "green", marginTop: 4 }}>✅ We will deliver here</div>}
-                    {isPincodeValid === false && <div style={{ color: "red", marginTop: 4 }}>❌ Wrong pincode or city/state mismatch</div>}
+                    {isPincodeValid === true && (
+                      <div style={{ color: "green", marginTop: 4 }}>
+                        {(addressForm.city || "").trim() && (addressForm.state || "").trim()
+                          ? "✅ Pincode matches your city & state"
+                          : "✅ Pincode found — please enter city and state above"}
+                      </div>
+                    )}
+                    {isPincodeValid === false && (
+                      <div style={{ color: "red", marginTop: 4 }}>
+                        ❌ Pincode not found, or city/state doesn’t match this PIN. Try the district or area
+                        spelling from India Post (e.g. official district name).
+                      </div>
+                    )}
                     {!/^\d{10}$/.test(phone) && phone.length > 0 && (
                       <div style={{ color: "red", marginTop: 4 }}>❌ Enter a valid 10-digit phone number</div>
                     )}
@@ -671,17 +855,73 @@ const handlePhonePePayment = async (order) => {
 
               {/* Payment Block */}
               <div className="cart-payment-block">
-                <div className="cart-payment-title">Choose Payment Option</div>
-                <label className="payment-option-label">
-                  <input
-                    type="radio"
-                    name="payment"
-                    value="UPI"
-                    checked={paymentMethod === "UPI"}
-                    onChange={() => setPaymentMethod("UPI")}
-                  />
-                  Mobile Banking / UPI 
-                </label>
+                <div className="cart-payment-heading">
+                  <span className="cart-payment-title">Payment method</span>
+                  <p className="cart-payment-lead">
+                    Choose how you&apos;d like to pay. COD requires a 10% advance to confirm your order.
+                  </p>
+                </div>
+                <div
+                  className="cart-payment-methods"
+                  role="radiogroup"
+                  aria-label="Payment method"
+                >
+                  <label
+                    className={`cart-payment-option${paymentMethod === "UPI" ? " cart-payment-option--active" : ""}`}
+                  >
+                    <input
+                      type="radio"
+                      name="payment"
+                      value="UPI"
+                      className="cart-payment-option__input"
+                      checked={paymentMethod === "UPI"}
+                      onChange={() => setPaymentMethod("UPI")}
+                    />
+                    <span className="cart-payment-option__check" aria-hidden />
+                    <span className="cart-payment-option__icon" aria-hidden>
+                      <FaMobileAlt />
+                    </span>
+                    <span className="cart-payment-option__text">
+                      <span className="cart-payment-option__name">UPI / Online</span>
+                      <span className="cart-payment-option__desc">
+                        Pay the full order amount now with UPI, card, or net banking.
+                      </span>
+                      <span className="cart-payment-option__amount">
+                        Pay now: <strong>₹{orderTotal.toFixed(2)}</strong>
+                      </span>
+                    </span>
+                  </label>
+                  <label
+                    className={`cart-payment-option${paymentMethod === "COD" ? " cart-payment-option--active" : ""}`}
+                  >
+                    <input
+                      type="radio"
+                      name="payment"
+                      value="COD"
+                      className="cart-payment-option__input"
+                      checked={paymentMethod === "COD"}
+                      onChange={() => setPaymentMethod("COD")}
+                    />
+                    <span className="cart-payment-option__check" aria-hidden />
+                    <span className="cart-payment-option__icon" aria-hidden>
+                      <FaTruck />
+                    </span>
+                    <span className="cart-payment-option__text">
+                      <span className="cart-payment-option__name">Cash on delivery</span>
+                      <span className="cart-payment-option__desc">
+                        Pay 10% online now to confirm. The rest when your order arrives.
+                      </span>
+                      <span className="cart-payment-option__amount cart-payment-option__amount--split">
+                        <span>
+                          Now (10%): <strong>₹{codAdvanceAmount.toFixed(2)}</strong>
+                        </span>
+                        <span className="cart-payment-option__on-delivery">
+                          On delivery: ₹{codBalanceAmount.toFixed(2)}
+                        </span>
+                      </span>
+                    </span>
+                  </label>
+                </div>
               </div>
 
               {/* Cart Summary */}
@@ -735,9 +975,29 @@ const handlePhonePePayment = async (order) => {
                 <div className="cart-summary-row cart-grand-total-final">
                   <span className="cart-summary-label">Cart Total</span>
                   <span className="cart-summary-value total-value">
-                    ₹{priceSummary.total.toFixed(2)}
+                    ₹{orderTotal.toFixed(2)}
                   </span>
                 </div>
+                {paymentMethod === "COD" && orderTotal > 0 && (
+                  <>
+                    <div className="cart-summary-row cart-summary-row--cod">
+                      <span className="cart-summary-label">Advance (10%)</span>
+                      <span className="cart-summary-value cart-summary-value--advance">
+                        ₹{codAdvanceAmount.toFixed(2)}
+                      </span>
+                    </div>
+                    <div className="cart-summary-row cart-summary-row--cod-muted">
+                      <span className="cart-summary-label">Due on delivery</span>
+                      <span className="cart-summary-value">
+                        ₹{codBalanceAmount.toFixed(2)}
+                      </span>
+                    </div>
+                    <p className="cart-cod-note">
+                      You will complete a secure online payment for the advance first; the
+                      remaining balance is paid in cash to the courier.
+                    </p>
+                  </>
+                )}
               </div>
 
               <button
@@ -745,7 +1005,9 @@ const handlePhonePePayment = async (order) => {
                 disabled={!canCheckout}
                 onClick={handleSubmitOrder}
               >
-                Buy Now
+                {paymentMethod === "COD"
+                  ? `Pay ₹${codAdvanceAmount.toFixed(2)} advance & place order`
+                  : `Pay ₹${orderTotal.toFixed(2)} & place order`}
               </button>
               {(!canCheckout) && <div style={{ color: "red", marginTop: 4, textAlign: "center" }}>❌ Please Add Your Address or Phone Number To Order.</div>}
             </>
